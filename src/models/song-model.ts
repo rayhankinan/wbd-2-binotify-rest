@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 
-import { User } from "./user";
+import { User } from "./user-model";
 
 @Entity()
 export class Song extends BaseEntity {

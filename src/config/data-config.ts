@@ -1,15 +1,15 @@
 import { DataSourceOptions } from "typeorm";
 
-import { User } from "../models/user";
-import { Song } from "../models/song";
+import { User } from "../models/user-model";
+import { Song } from "../models/song-model";
 
 export const dataConfig: DataSourceOptions = {
     type: "postgres",
-    host: process.env.POSTGRES_HOST || "127.0.0.1",
-    port: +(process.env.POSTGRES_PORT || "5432"),
-    username: process.env.POSTGRES_USER || "postgres",
+    host: process.env.POSTGRES_HOST,
+    port: +process.env.POSTGRES_PORT,
+    username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DBNAME || "binotify_rest",
+    database: process.env.POSTGRES_DBNAME,
     synchronize: true,
     logging: true,
     entities: [User, Song],
