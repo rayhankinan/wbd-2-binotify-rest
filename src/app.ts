@@ -13,17 +13,13 @@ export class App {
         this.dataSource = new DataSource(dataConfig);
 
         this.server = express();
-        this.addAPI();
-    }
-
-    addAPI() {
         this.server.use("/api", [
             express.json(),
             express.urlencoded({ extended: true }),
         ]);
     }
 
-    run() {
+    async run() {
         this.dataSource
             .initialize()
             .then(async () => {
