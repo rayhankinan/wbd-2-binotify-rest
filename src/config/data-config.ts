@@ -2,6 +2,7 @@ import { DataSourceOptions } from "typeorm";
 
 import { User } from "../models/user-model";
 import { Song } from "../models/song-model";
+import { UserSubscriber } from "../subscribers/user-subscriber";
 
 export const dataConfig: DataSourceOptions = {
     type: "postgres",
@@ -13,6 +14,6 @@ export const dataConfig: DataSourceOptions = {
     synchronize: true,
     logging: true,
     entities: [User, Song],
-    subscribers: [],
+    subscribers: [UserSubscriber],
     migrations: [],
 };
