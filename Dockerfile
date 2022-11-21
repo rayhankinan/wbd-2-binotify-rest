@@ -8,3 +8,5 @@ COPY tsconfig.json ./
 COPY src ./src
 
 CMD [ "npm", "run", "start:dev" ]
+
+EXPOSE 3000
