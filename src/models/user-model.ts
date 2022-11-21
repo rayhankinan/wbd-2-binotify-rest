@@ -11,7 +11,7 @@ import { Song } from "./song-model";
 @Entity()
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
-    user_id: number;
+    userID: number;
 
     @Column({
         unique: true,

@@ -105,3 +105,6 @@ dist
 
 # Apple macOS operating system
 .DS_Store
+
+# Docker
+postgresql/

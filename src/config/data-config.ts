@@ -9,7 +9,7 @@ export const dataConfig: DataSourceOptions = {
     port: +process.env.POSTGRES_PORT,
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DBNAME,
+    database: process.env.POSTGRES_DB,
     synchronize: true,
     logging: true,
     entities: [User, Song],

@@ -12,18 +12,18 @@ import { User } from "./user-model";
 @Entity()
 export class Song extends BaseEntity {
     @PrimaryGeneratedColumn()
-    song_id: number;
+    songID: number;
 
     @Column()
     judul: string;
 
     @Column()
-    penyanyi_id: number;
+    penyanyiID: number;
 
     @Column()
-    audio_path: string;
+    audioPath: string;
 
-    @ManyToOne(() => User, (user) => user.user_id, { cascade: true })
-    @JoinColumn({ name: "penyanyi_id" })
+    @ManyToOne(() => User, (user) => user.userID, { cascade: true })
+    @JoinColumn({ name: "penyanyiID" })
     user: User;
 }
