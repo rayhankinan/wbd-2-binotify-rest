@@ -19,7 +19,7 @@ export class App {
         ]);
     }
 
-    async run() {
+    run() {
         this.dataSource
             .initialize()
             .then(async () => {

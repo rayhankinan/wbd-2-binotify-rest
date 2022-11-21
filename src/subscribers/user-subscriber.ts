@@ -23,7 +23,10 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
     }
 
     async beforeUpdate(event: UpdateEvent<User>) {
-        if (event.entity.password !== event.databaseEntity.password) {
+        if (
+            event.entity &&
+            event.entity.password !== event.databaseEntity.password
+        ) {
             event.entity.password = await bcrypt.hash(
                 event.entity.password,
                 bcryptConfig.saltRounds

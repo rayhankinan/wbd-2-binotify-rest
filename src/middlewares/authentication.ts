@@ -12,3 +12,14 @@ export interface AuthToken {
 export interface AuthRequest extends Request {
     token: AuthToken;
 }
+
+export class Authentication {
+    async authenticate(req: Request, res: Response, next: NextFunction) {
+        if (req.path === "/user/token") {
+            next();
+            return;
+        }
+
+        const token = req.header("Authorization")?.replace("Bearer ", "");
+    }
+}
