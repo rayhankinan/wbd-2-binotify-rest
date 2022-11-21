@@ -21,5 +21,18 @@ export class Authentication {
         }
 
         const token = req.header("Authorization")?.replace("Bearer ", "");
+        if (!token) {
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: ReasonPhrases.UNAUTHORIZED,
+            });
+            return;
+        }
+
+        (req as AuthRequest).token = jwt.verify(
+            token,
+            jwtConfig.secret
+        ) as AuthToken;
+
+        next();
     }
 }
