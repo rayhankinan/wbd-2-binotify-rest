@@ -1,0 +1,1 @@
+docker build -t binotify-rest-service:latest .
