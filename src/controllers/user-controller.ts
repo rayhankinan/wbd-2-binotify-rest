@@ -79,6 +79,7 @@ export class UserController {
             user.username = username;
             user.name = name;
             user.password = password;
+            user.isAdmin = false;
 
             const newUser = await user.save();
             if (!newUser) {
@@ -105,9 +106,9 @@ export class UserController {
     }
 
     index() {
-        return async (res: Response) => {
+        return async (req:Request, res: Response) => {
             const users = await User.createQueryBuilder("user")
-            .select(["user.userID", "user.name"]).getMany();
+            .select(["user.userID", "user.name"]).where("user.isAdmin = :isAdmin", { isAdmin: false }).getMany();
             if (!users) {
                 res.status(StatusCodes.NOT_FOUND).json({
                     message: ReasonPhrases.NOT_FOUND,

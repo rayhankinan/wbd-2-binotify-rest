@@ -5,6 +5,7 @@ import "reflect-metadata";
 import { serverConfig } from "./config/server-config";
 import { dataConfig } from "./config/data-config";
 import { UserRoute } from "./routes/user-route";
+import { SongRoute } from "./routes/song-route";
 
 export class App {
     dataSource: DataSource;
@@ -14,12 +15,13 @@ export class App {
         this.dataSource = new DataSource(dataConfig);
 
         const userRoute = new UserRoute();
+        const songRoute = new SongRoute();
 
         this.server = express();
         this.server.use(
             "/api",
             [express.json(), express.urlencoded({ extended: true })],
-            userRoute.getRoute()
+            [userRoute.getRoute(), songRoute.getRoute()]
         );
     }
 
