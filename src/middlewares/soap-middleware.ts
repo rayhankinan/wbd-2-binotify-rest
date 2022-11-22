@@ -19,6 +19,12 @@ export class SOAPMiddleware {
         return async (req: Request, res: Response, next: NextFunction) => {
             const { token } = req as AuthRequest;
             const { creatorID }: ValidateRequest = req.body;
+            if (!token || !creatorID) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: ReasonPhrases.BAD_REQUEST,
+                });
+                return;
+            }
 
             const isValidated = await this.soapServices.validate(
                 creatorID,

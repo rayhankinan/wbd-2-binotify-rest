@@ -2,8 +2,8 @@ import express, { Express } from "express";
 import { DataSource } from "typeorm";
 import "reflect-metadata";
 
-import { dataConfig } from "./config/data-config";
 import { serverConfig } from "./config/server-config";
+import { dataConfig } from "./config/data-config";
 import { UserRoute } from "./routes/user-route";
 
 export class App {

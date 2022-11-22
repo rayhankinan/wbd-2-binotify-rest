@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { User } from "../models/user-model";
 import { AuthToken } from "../middlewares/authentication-middleware";
 import { jwtConfig } from "../config/jwt-config";
+import { User } from "../models/user-model";
 
 interface TokenRequest {
     username: string;
@@ -23,10 +23,12 @@ export class UserController {
     token() {
         return async (req: Request, res: Response) => {
             const { username, password }: TokenRequest = req.body;
-
-            const user = new User();
-            user.username = username;
-            user.password = password;
+            if (!username || !password) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: ReasonPhrases.BAD_REQUEST,
+                });
+                return;
+            }
 
             const foundUser = await User.findOne({
                 where: { username },
@@ -65,6 +67,12 @@ export class UserController {
     store() {
         return async (req: Request, res: Response) => {
             const { email, username, name, password }: StoreRequest = req.body;
+            if (!email || !username || !name || !password) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: ReasonPhrases.BAD_REQUEST,
+                });
+                return;
+            }
 
             const user = new User();
             user.email = email;
