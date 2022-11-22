@@ -79,6 +79,7 @@ export class UserController {
             user.username = username;
             user.name = name;
             user.password = password;
+            user.isAdmin = false;
 
             const newUser = await user.save();
             if (!newUser) {
