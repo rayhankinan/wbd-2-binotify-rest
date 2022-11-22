@@ -7,6 +7,7 @@ import {
     AuthToken,
     AuthRequest,
 } from "../middlewares/authentication-middleware";
+import { cacheConfig } from "../config/cache-config";
 import { jwtConfig } from "../config/jwt-config";
 import { User } from "../models/user-model";
 
@@ -112,17 +113,17 @@ export class UserController {
     index() {
         return async (req: Request, res: Response) => {
             const { token } = req as AuthRequest;
-            // if (!token || !token.isAdmin) {
-            //     res.status(StatusCodes.UNAUTHORIZED).json({
-            //         message: ReasonPhrases.UNAUTHORIZED,
-            //     });
-            //     return;
-            // }
+            if (!token || !token.isAdmin) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
 
             const users = await User.createQueryBuilder("user")
                 .select(["user.userID", "user.name"])
                 .where("user.isAdmin = :isAdmin", { isAdmin: false })
-                .cache("list_penyanyi", 60000)
+                .cache("list_penyanyi", cacheConfig.cacheExpirationTime)
                 .getMany();
             if (!users) {
                 res.status(StatusCodes.NOT_FOUND).json({
