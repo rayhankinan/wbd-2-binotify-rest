@@ -4,7 +4,7 @@ import "reflect-metadata";
 
 import { dataConfig } from "./config/data-config";
 import { serverConfig } from "./config/server-config";
-import { Authentication } from "./middlewares/authentication";
+import { AuthenticationMiddleware } from "./middlewares/authentication-middleware";
 
 export class App {
     dataSource: DataSource;
@@ -13,13 +13,13 @@ export class App {
     constructor() {
         this.dataSource = new DataSource(dataConfig);
 
-        const authentication = new Authentication();
+        const authenticationMiddleware = new AuthenticationMiddleware();
 
         this.server = express();
         this.server.use("/api", [
             express.json(),
             express.urlencoded({ extended: true }),
-            authentication.authenticate(),
+            authenticationMiddleware.authenticate(),
         ]);
     }
 

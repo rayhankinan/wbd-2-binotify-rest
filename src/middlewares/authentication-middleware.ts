@@ -13,13 +13,9 @@ export interface AuthRequest extends Request {
     token: AuthToken;
 }
 
-export class Authentication {
+export class AuthenticationMiddleware {
     authenticate() {
-        return async function (
-            req: Request,
-            res: Response,
-            next: NextFunction
-        ) {
+        return async (req: Request, res: Response, next: NextFunction) => {
             if (req.path === "/user/token") {
                 next();
                 return;
