@@ -5,6 +5,7 @@ export class SongController {
         return async (req: Request, res: Response) => {
             // TO DO: @Marcho
             // Tambahkan create lagu penyanyi di sini
+            // Gunakan method save
         };
     }
 
@@ -12,6 +13,7 @@ export class SongController {
         return async (req: Request, res: Response) => {
             // TO DO: @Marcho
             // Tambahkan read all lagu penyanyi di sini
+            // Gunakan method find
         };
     }
 
@@ -19,6 +21,7 @@ export class SongController {
         return async (req: Request, res: Response) => {
             // TO DO: @Marcho
             // Tambahkan get one lagu penyanyi di sini
+            // Gunakan method findOne
         };
     }
 
@@ -26,6 +29,7 @@ export class SongController {
         return async (req: Request, res: Response) => {
             // TO DO: @Marcho
             // Tambahkan update lagu penyanyi di sini
+            // Gunakan method findOne terus save
         };
     }
 
@@ -33,6 +37,7 @@ export class SongController {
         return async (req: Request, res: Response) => {
             // TO DO: @Marcho
             // Tambahkan delete lagu penyanyi di sini
+            // Gunakan method findOne terus delete
         };
     }
 }
