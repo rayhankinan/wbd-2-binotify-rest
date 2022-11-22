@@ -103,4 +103,13 @@ export class UserController {
             });
         };
     }
+
+    index() {
+        return async (req: Request, res: Response) => {
+            // TO DO: @Aira
+            // Tambahkan read all penyanyi di sini
+            // Gunakan method find
+            // Janlup tambahin cek isAdmin
+        };
+    }
 }
