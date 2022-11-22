@@ -103,4 +103,21 @@ export class UserController {
             });
         };
     }
+
+    index() {
+        return async (res: Response) => {
+            const users = await User.createQueryBuilder("user")
+            .select(["user.userID", "user.name"]).getMany();
+            if (!users) {
+                res.status(StatusCodes.NOT_FOUND).json({
+                    message: ReasonPhrases.NOT_FOUND,
+                });
+                return;
+            }
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                users,
+            });
+        };
+    }
 }

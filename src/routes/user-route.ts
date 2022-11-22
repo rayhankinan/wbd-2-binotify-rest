@@ -12,6 +12,7 @@ export class UserRoute {
     getRoute() {
         return Router()
             .post("/user/token", this.userController.token())
-            .post("/user", this.userController.store());
+            .post("/user", this.userController.store())
+            .get("/user", this.userController.index());
     }
 }
