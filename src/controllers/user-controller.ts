@@ -111,7 +111,7 @@ export class UserController {
 
     index() {
         return async (req: Request, res: Response) => {
-            // const { token } = req as AuthRequest;
+            const { token } = req as AuthRequest;
             // if (!token || !token.isAdmin) {
             //     res.status(StatusCodes.UNAUTHORIZED).json({
             //         message: ReasonPhrases.UNAUTHORIZED,
@@ -122,7 +122,7 @@ export class UserController {
             const users = await User.createQueryBuilder("user")
                 .select(["user.userID", "user.name"])
                 .where("user.isAdmin = :isAdmin", { isAdmin: false })
-                .cache(true)
+                .cache("list_penyanyi", 60000)
                 .getMany();
             if (!users) {
                 res.status(StatusCodes.NOT_FOUND).json({

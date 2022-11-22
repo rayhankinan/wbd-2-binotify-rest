@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import { DataSource } from "typeorm";
+import morgan from "morgan";
 import "reflect-metadata";
 
 import { serverConfig } from "./config/server-config";
@@ -20,8 +21,11 @@ export class App {
         this.server = express();
         this.server.use(
             "/api",
-            [express.json(), express.urlencoded({ extended: true })],
-            [userRoute.getRoute(), songRoute.getRoute()]
+            express.json(),
+            express.urlencoded({ extended: true }),
+            morgan("combined"),
+            userRoute.getRoute(),
+            songRoute.getRoute()
         );
     }
 

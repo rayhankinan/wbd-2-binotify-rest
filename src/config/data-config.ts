@@ -5,9 +5,7 @@ import { Song } from "../models/song-model";
 import { UserSubscriber } from "../subscribers/user-subscriber";
 
 const generatePostgreHost = () => {
-    return process.env.POSTGRES_HOST
-        ? process.env.POSTGRES_HOST
-        : "db-binotify-rest-service";
+    return process.env.POSTGRES_HOST ? process.env.POSTGRES_HOST : "localhost";
 };
 
 const generatePostgrePort = () => {
@@ -29,9 +27,7 @@ const generatePostgreDatabase = () => {
 };
 
 const generateRedisHost = () => {
-    return process.env.REDIS_HOST
-        ? process.env.REDIS_HOST
-        : "cache-binotify-rest-service";
+    return process.env.REDIS_HOST ? process.env.REDIS_HOST : "localhost";
 };
 
 const generateRedisPort = () => {
