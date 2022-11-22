@@ -33,17 +33,18 @@ export class UserController {
                 return;
             }
 
-            const foundUser = await User.findOne({
-                where: { username },
-            });
-            if (!foundUser) {
+            const user = await User.createQueryBuilder("user")
+                .select(["user.userID", "user.password", "user.isAdmin"])
+                .where("user.username = :username", { username })
+                .getOne();
+            if (!user) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: "Username is incorrect",
                 });
                 return;
             }
 
-            const isMatch = await bcrypt.compare(password, foundUser.password);
+            const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: "Password is incorrect",
@@ -51,7 +52,7 @@ export class UserController {
                 return;
             }
 
-            const { userID, isAdmin } = foundUser;
+            const { userID, isAdmin } = user;
             const payload: AuthToken = {
                 userID,
                 isAdmin,
@@ -110,17 +111,18 @@ export class UserController {
 
     index() {
         return async (req: Request, res: Response) => {
-            const { token } = req as AuthRequest;
-            if (!token || !token.isAdmin) {
-                res.status(StatusCodes.UNAUTHORIZED).json({
-                    message: ReasonPhrases.UNAUTHORIZED,
-                });
-                return;
-            }
+            // const { token } = req as AuthRequest;
+            // if (!token || !token.isAdmin) {
+            //     res.status(StatusCodes.UNAUTHORIZED).json({
+            //         message: ReasonPhrases.UNAUTHORIZED,
+            //     });
+            //     return;
+            // }
 
             const users = await User.createQueryBuilder("user")
                 .select(["user.userID", "user.name"])
                 .where("user.isAdmin = :isAdmin", { isAdmin: false })
+                .cache(true)
                 .getMany();
             if (!users) {
                 res.status(StatusCodes.NOT_FOUND).json({
@@ -131,7 +133,7 @@ export class UserController {
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                users,
+                data: users,
             });
         };
     }

@@ -4,35 +4,56 @@ import { User } from "../models/user-model";
 import { Song } from "../models/song-model";
 import { UserSubscriber } from "../subscribers/user-subscriber";
 
-const generateHost = () => {
-    return process.env.POSTGRES_HOST ? process.env.POSTGRES_HOST : "127.0.0.1";
+const generatePostgreHost = () => {
+    return process.env.POSTGRES_HOST
+        ? process.env.POSTGRES_HOST
+        : "db-binotify-rest-service";
 };
 
-const generatePort = () => {
+const generatePostgrePort = () => {
     return process.env.POSTGRES_PORT ? +process.env.POSTGRES_PORT : 5432;
 };
 
-const generateUsername = () => {
+const generatePostgreUsername = () => {
     return process.env.POSTGRES_USER ? process.env.POSTGRES_USER : "postgres";
 };
 
-const generatePassword = () => {
+const generatePostgrePassword = () => {
     return process.env.POSTGRES_PASSWORD
         ? process.env.POSTGRES_PASSWORD
         : "password";
 };
 
-const generateDatabase = () => {
+const generatePostgreDatabase = () => {
     return process.env.POSTGRES_DB ? process.env.POSTGRES_DB : "binotify_rest";
+};
+
+const generateRedisHost = () => {
+    return process.env.REDIS_HOST
+        ? process.env.REDIS_HOST
+        : "cache-binotify-rest-service";
+};
+
+const generateRedisPort = () => {
+    return process.env.REDIS_PORT ? +process.env.REDIS_PORT : 6379;
 };
 
 export const dataConfig: DataSourceOptions = {
     type: "postgres",
-    host: generateHost(),
-    port: generatePort(),
-    username: generateUsername(),
-    password: generatePassword(),
-    database: generateDatabase(),
+    host: generatePostgreHost(),
+    port: generatePostgrePort(),
+    username: generatePostgreUsername(),
+    password: generatePostgrePassword(),
+    database: generatePostgreDatabase(),
+    cache: {
+        type: "redis",
+        options: {
+            socket: {
+                host: generateRedisHost(),
+                port: generateRedisPort(),
+            },
+        },
+    },
     synchronize: true,
     logging: true,
     entities: [User, Song],
