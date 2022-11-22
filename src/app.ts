@@ -4,7 +4,7 @@ import "reflect-metadata";
 
 import { dataConfig } from "./config/data-config";
 import { serverConfig } from "./config/server-config";
-import { AuthenticationMiddleware } from "./middlewares/authentication-middleware";
+import { UserRoute } from "./routes/user-route";
 
 export class App {
     dataSource: DataSource;
@@ -13,14 +13,14 @@ export class App {
     constructor() {
         this.dataSource = new DataSource(dataConfig);
 
-        const authenticationMiddleware = new AuthenticationMiddleware();
+        const userRoute = new UserRoute();
 
         this.server = express();
-        this.server.use("/api", [
-            express.json(),
-            express.urlencoded({ extended: true }),
-            authenticationMiddleware.authenticate(),
-        ]);
+        this.server.use(
+            "/api",
+            [express.json(), express.urlencoded({ extended: true })],
+            userRoute.getRoute()
+        );
     }
 
     run() {
@@ -29,7 +29,7 @@ export class App {
             .then(async () => {
                 this.server.listen(serverConfig.port, () => {
                     console.log(
-                        `Server is running on http://localhost:${serverConfig.port}`
+                        `Server is running on port: ${serverConfig.port}`
                     );
                 });
             })
