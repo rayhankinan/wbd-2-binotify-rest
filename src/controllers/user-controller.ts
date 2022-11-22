@@ -3,7 +3,10 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { AuthToken } from "../middlewares/authentication-middleware";
+import {
+    AuthToken,
+    AuthRequest,
+} from "../middlewares/authentication-middleware";
 import { jwtConfig } from "../config/jwt-config";
 import { User } from "../models/user-model";
 
@@ -106,15 +109,26 @@ export class UserController {
     }
 
     index() {
-        return async (req:Request, res: Response) => {
+        return async (req: Request, res: Response) => {
+            const { token } = req as AuthRequest;
+            if (!token || !token.isAdmin) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
+
             const users = await User.createQueryBuilder("user")
-            .select(["user.userID", "user.name"]).where("user.isAdmin = :isAdmin", { isAdmin: false }).getMany();
+                .select(["user.userID", "user.name"])
+                .where("user.isAdmin = :isAdmin", { isAdmin: false })
+                .getMany();
             if (!users) {
                 res.status(StatusCodes.NOT_FOUND).json({
                     message: ReasonPhrases.NOT_FOUND,
                 });
                 return;
             }
+
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
                 users,

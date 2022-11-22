@@ -12,10 +12,10 @@ export class App {
     server: Express;
 
     constructor() {
-        this.dataSource = new DataSource(dataConfig);
-
         const userRoute = new UserRoute();
         const songRoute = new SongRoute();
+
+        this.dataSource = new DataSource(dataConfig);
 
         this.server = express();
         this.server.use(

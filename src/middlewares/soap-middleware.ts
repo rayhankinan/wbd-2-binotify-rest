@@ -18,8 +18,15 @@ export class SOAPMiddleware {
     validate() {
         return async (req: Request, res: Response, next: NextFunction) => {
             const { token } = req as AuthRequest;
+            if (!token) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
+
             const { creatorID }: ValidateRequest = req.body;
-            if (!token || !creatorID) {
+            if (!creatorID) {
                 res.status(StatusCodes.BAD_REQUEST).json({
                     message: ReasonPhrases.BAD_REQUEST,
                 });

@@ -5,14 +5,14 @@ import { SOAPMiddleware } from "../middlewares/soap-middleware";
 import { SongController } from "../controllers/song-controller";
 
 export class SongRoute {
-    songController: SongController;
     authenticationMiddleware: AuthenticationMiddleware;
     soapMiddleware: SOAPMiddleware;
+    songController: SongController;
 
     constructor() {
-        this.songController = new SongController();
         this.authenticationMiddleware = new AuthenticationMiddleware();
         this.soapMiddleware = new SOAPMiddleware();
+        this.songController = new SongController();
     }
 
     getRoute() {
