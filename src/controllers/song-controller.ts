@@ -128,10 +128,7 @@ export class SongController {
                 return;
             }
 
-            res.status(StatusCodes.OK).json({
-                messeage: ReasonPhrases.OK,
-                data: song
-            });
+            res.sendFile(path.join(__dirname, "..", "..", "uploads", song.audioPath));
         };
     }
 
