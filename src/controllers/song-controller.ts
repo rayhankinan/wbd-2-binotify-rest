@@ -172,8 +172,12 @@ export class SongController {
                 return;
             }
             
+            // Get old filename
+            const oldFilename = song.audioPath;
+
             // Update model
             song.judul = title;
+            song.audioPath = req.file!.filename;
 
             // Save!
             const newSong = await song.save();
@@ -183,6 +187,9 @@ export class SongController {
                 });
                 return;
             }
+
+            // Delete old file
+            fs.unlinkSync(path.join(__dirname, "..", "..", "uploads", oldFilename));
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK

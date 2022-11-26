@@ -53,6 +53,7 @@ export class SongRoute {
             )
             .put(
                 "/song/:id",
+                upload.single('file'),
                 this.authenticationMiddleware.authenticate(),
                 this.songController.update()
             )
