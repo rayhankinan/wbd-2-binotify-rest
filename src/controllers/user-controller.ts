@@ -159,4 +159,22 @@ export class UserController {
             });
         };
     }
+
+    check() {
+        return async (req: Request, res: Response) => {
+            const { token } = req as AuthRequest;
+            
+            if (!token) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
+
+            res.status(StatusCodes.OK).json({
+                userID: token.userID,
+                isAdmin: token.isAdmin
+            });
+        }
+    }
 }

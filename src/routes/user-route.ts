@@ -20,6 +20,11 @@ export class UserRoute {
                 "/user",
                 this.authenticationMiddleware.authenticate(),
                 this.userController.index()
-            );
+            )
+            .get(
+                "/user/check", 
+                this.authenticationMiddleware.authenticate(),
+                this.userController.check()
+            )
     }
 }

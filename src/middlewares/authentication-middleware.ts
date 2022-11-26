@@ -17,6 +17,7 @@ export class AuthenticationMiddleware {
     authenticate() {
         return async (req: Request, res: Response, next: NextFunction) => {
             const token = req.header("Authorization")?.replace("Bearer ", "");
+            
             if (!token) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: ReasonPhrases.UNAUTHORIZED,
