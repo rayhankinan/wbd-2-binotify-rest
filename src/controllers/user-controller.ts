@@ -40,7 +40,7 @@ export class UserController {
                 .getOne();
             if (!user) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "Username is incorrect",
+                    message: "Invalid credentials",
                 });
                 return;
             }
@@ -48,7 +48,7 @@ export class UserController {
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "Password is incorrect",
+                    message: "Invalid credentials",
                 });
                 return;
             }
