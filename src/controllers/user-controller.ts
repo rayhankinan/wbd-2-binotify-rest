@@ -86,6 +86,27 @@ export class UserController {
             user.password = password;
             user.isAdmin = false;
 
+            // Cek apakah data sudah ada ...
+            const existingUserWithEmail = await User.findOneBy({
+                email
+            })
+            if (existingUserWithEmail) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "Email already taken!"
+                });
+                return;
+            }
+
+            const existingUserWithUsername = await User.findOneBy({
+                username
+            })
+            if (existingUserWithUsername) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "Username already taken!"
+                });
+                return;
+            }
+
             const newUser = await user.save();
             if (!newUser) {
                 res.status(StatusCodes.BAD_REQUEST).json({
