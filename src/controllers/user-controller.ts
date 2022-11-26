@@ -87,6 +87,16 @@ export class UserController {
             user.isAdmin = false;
 
             // Cek apakah data sudah ada ...
+            const existingUserWithUsername = await User.findOneBy({
+                username
+            })
+            if (existingUserWithUsername) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "Username already taken!"
+                });
+                return;
+            }
+            
             const existingUserWithEmail = await User.findOneBy({
                 email
             })
@@ -97,15 +107,6 @@ export class UserController {
                 return;
             }
 
-            const existingUserWithUsername = await User.findOneBy({
-                username
-            })
-            if (existingUserWithUsername) {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Username already taken!"
-                });
-                return;
-            }
 
             const newUser = await user.save();
             if (!newUser) {
