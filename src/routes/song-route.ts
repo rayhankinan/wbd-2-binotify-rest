@@ -47,6 +47,11 @@ export class SongRoute {
                 this.songController.show()
             )
             .put(
+                "/song/title/:id",
+                this.authenticationMiddleware.authenticate(),
+                this.songController.updateTitle()
+            )
+            .put(
                 "/song/:id",
                 this.authenticationMiddleware.authenticate(),
                 this.songController.update()

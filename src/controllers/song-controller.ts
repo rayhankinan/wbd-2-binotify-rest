@@ -12,14 +12,7 @@ import * as path from 'path';
 import { getMP3Duration } from "../utils/get-mp3-duration";
 
 interface UpdateRequest {
-    judul: string;
-    audioPath?: string;
-}
-
-interface StoreRequest {
-    judul: string;
-    penyanyiID: number;
-    audioPath: string;
+    title: string;
 }
 
 export class SongController {
@@ -154,7 +147,7 @@ export class SongController {
             }
 
             // Parse request body
-            const { judul, audioPath } : UpdateRequest = req.body;
+            const { title } : UpdateRequest = req.body;
 
             // Parse request param
             const songID = parseInt(req.params.id);
@@ -180,10 +173,62 @@ export class SongController {
             }
             
             // Update model
-            song.judul = judul;
-            if (audioPath) {
-                song.audioPath = audioPath;
+            song.judul = title;
+
+            // Save!
+            const newSong = await song.save();
+            if (!newSong) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: ReasonPhrases.BAD_REQUEST,
+                });
+                return;
             }
+
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK
+            });
+        };
+    }
+
+    updateTitle() {
+        return async (req: Request, res: Response) => {
+            const { token } = req as AuthRequest;
+            if (!token || token.isAdmin) {
+                // Endpoint hanya bisa diakses oleh penyanyi
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
+
+            // Parse request body
+            const { title } : UpdateRequest = req.body;
+
+            // Parse request param
+            const songID = parseInt(req.params.id);
+
+            const song = await Song.findOneBy({
+                songID
+            });
+
+            // Apabila tidak ditemukan ...
+            if (!song) {
+                res.status(StatusCodes.NOT_FOUND).json({
+                    message: ReasonPhrases.NOT_FOUND,
+                });
+                return;
+            }
+
+            // Bukan lagu requester ...
+            if (song.penyanyiID != token.userID) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
+            
+            // Update model
+            song.judul = title;
 
             // Save!
             const newSong = await song.save();
