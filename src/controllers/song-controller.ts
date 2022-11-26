@@ -95,7 +95,7 @@ export class SongController {
             })
 
             res.status(StatusCodes.OK).json({
-                messeage: ReasonPhrases.OK,
+                message: ReasonPhrases.OK,
                 data: songsData
             });
         };
@@ -240,6 +240,9 @@ export class SongController {
                 });
                 return;
             }
+
+            // Delete from storage
+            fs.unlinkSync(path.join(__dirname, "..", "..", "uploads", newSong.audioPath));
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK
