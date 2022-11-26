@@ -31,13 +31,13 @@ export class SongController {
             }
 
             // Parse request body
-            const { judul, penyanyiID, audioPath }: StoreRequest = req.body;
+            const { title } = req.body;
 
             // Buat song baru
             const song = new Song();
-            song.judul = judul;
-            song.penyanyiID = penyanyiID;
-            song.audioPath = audioPath;
+            song.judul = title;
+            song.penyanyiID = token.userID;
+            song.audioPath = req.file!.filename;
 
             // Buat lagu
             const newSong = await song.save();
