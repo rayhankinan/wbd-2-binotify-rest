@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import cors from 'cors';
 import { DataSource } from "typeorm";
 import morgan from "morgan";
 import "reflect-metadata";
@@ -19,6 +20,7 @@ export class App {
         this.dataSource = new DataSource(dataConfig);
 
         this.server = express();
+        this.server.use((cors as (options: cors.CorsOptions) => express.RequestHandler)({}));
         this.server.use(
             "/api",
             express.json(),
