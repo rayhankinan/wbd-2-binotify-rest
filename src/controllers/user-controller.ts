@@ -96,7 +96,7 @@ export class UserController {
                 });
                 return;
             }
-            
+
             const existingUserWithEmail = await User.findOneBy({
                 email
             })
@@ -106,7 +106,6 @@ export class UserController {
                 });
                 return;
             }
-
 
             const newUser = await user.save();
             if (!newUser) {
