@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        cb(null, file.fieldname + '-' + uniqueSuffix + ".mp3")
+        cb(null, path.parse(file.originalname).name + '-' + uniqueSuffix + ".mp3")
     }
 });
 const upload = multer({ storage: storage });
@@ -39,13 +39,11 @@ export class SongRoute {
             .get(
                 "/song",
                 this.authenticationMiddleware.authenticate(),
-                this.soapMiddleware.validate(),
                 this.songController.index()
             )
             .get(
                 "/song/:id",
                 this.authenticationMiddleware.authenticate(),
-                this.soapMiddleware.validate(),
                 this.songController.show()
             )
             .put(

@@ -753,6 +753,11 @@
     "has" "^1.0.3"
     "has-symbols" "^1.0.3"
 
+"get-mp3-duration@^1.0.0":
+  "integrity" "sha512-SiTppS0shvqCJ8rky8E1Yi9thLoTTGq3Tjc4n4pmjo8BMuiQFN3cCfiaWmRFk/8TjhOQhPwrpJZJDvOcbPVwrw=="
+  "resolved" "https://registry.npmjs.org/get-mp3-duration/-/get-mp3-duration-1.0.0.tgz"
+  "version" "1.0.0"
+
 "glob-parent@~5.1.2":
   "integrity" "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="
   "resolved" "https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.2.tgz"

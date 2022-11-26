@@ -7,6 +7,10 @@ import {
 
 import { Song } from "../models/song-model";
 
+import * as fs from 'fs';
+import * as path from 'path';
+import { getMP3Duration } from "../utils/get-mp3-duration";
+
 interface UpdateRequest {
     judul: string;
     audioPath?: string;
@@ -70,9 +74,29 @@ export class SongController {
                 penyanyiID: token.userID
             });
 
+            // Construct expected data
+            interface ISongData {
+                id: number;
+                title: string;
+                duration: Number;
+            }
+
+            let songsData: ISongData[] = [];
+
+            songs.forEach(song => {
+                const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
+                const duration = getMP3Duration(buffer)
+                
+                songsData.push({
+                    id: song.songID,
+                    title: song.judul,
+                    duration: Math.ceil(duration / 1000)
+                });
+            })
+
             res.status(StatusCodes.OK).json({
                 messeage: ReasonPhrases.OK,
-                data: songs
+                data: songsData
             });
         };
     }
