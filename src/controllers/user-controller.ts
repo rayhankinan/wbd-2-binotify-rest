@@ -146,12 +146,6 @@ export class UserController {
                 .where("user.isAdmin = :isAdmin", { isAdmin: false })
                 .cache("list_penyanyi", cacheConfig.cacheExpirationTime)
                 .getMany();
-            if (!users) {
-                res.status(StatusCodes.NOT_FOUND).json({
-                    message: ReasonPhrases.NOT_FOUND,
-                });
-                return;
-            }
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
