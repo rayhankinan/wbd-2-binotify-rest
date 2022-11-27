@@ -322,4 +322,66 @@ export class SongController {
             });
         };
     }
+
+    indexArtist() {
+        return async (req: Request, res: Response) => {
+            // TODO: Authenticate subscription
+
+            // Get page query
+            let { artistID } = req.params;
+
+            // Fetch semua lagu milik requester
+            let songs = await Song.findBy({
+                penyanyiID: parseInt(artistID)
+            });
+
+            // Construct expected data
+            interface ISongData {
+                id: number;
+                title: string;
+                duration: Number;
+            }
+
+            let songsData: ISongData[] = [];
+
+            songs.forEach(song => {
+                const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
+                const duration = getMP3Duration(buffer)
+                
+                songsData.push({
+                    id: song.songID,
+                    title: song.judul,
+                    duration: Math.ceil(duration / 1000)
+                });
+            })
+
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: songsData,
+            });
+        };
+    }
+
+    fetchSong() {
+        return async (req: Request, res: Response) => {
+            // TODO: Authenticate subscription
+
+            const songID = parseInt(req.params.songID);
+
+            // Fetch semua lagu milik requester
+            const song = await Song.findOneBy({
+                songID
+            });
+
+            // Apabila tidak ditemukan ...
+            if (!song) {
+                res.status(StatusCodes.NOT_FOUND).json({
+                    message: ReasonPhrases.NOT_FOUND,
+                });
+                return;
+            }
+
+            res.sendFile(path.join(__dirname, "..", "..", "uploads", song.audioPath));
+        };
+    }
 }

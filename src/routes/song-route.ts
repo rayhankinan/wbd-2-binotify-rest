@@ -61,6 +61,14 @@ export class SongRoute {
                 "/song/:id",
                 this.authenticationMiddleware.authenticate(),
                 this.songController.delete()
-            );
+            )
+            .get(
+                "/app/song/:artistID",
+                this.songController.indexArtist()
+            )
+            .get(
+                "/app/song/listen/:songID",
+                this.songController.fetchSong()
+            )
     }
 }
