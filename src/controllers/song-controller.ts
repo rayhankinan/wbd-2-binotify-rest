@@ -62,10 +62,22 @@ export class SongController {
                 return;
             }
 
+            // Get page query
+            let { page, pageSize } = req.query;
+            if (!page || !pageSize) {
+                page = "1";
+                pageSize = "5";
+            }
+
             // Fetch semua lagu milik requester
-            const songs = await Song.findBy({
+            let songs = await Song.findBy({
                 penyanyiID: token.userID
             });
+
+            const totalPage = Math.ceil(songs.length / parseInt(pageSize as string));
+
+            // Slice according to page
+            songs = songs.slice((parseInt(page as string) - 1) * parseInt(pageSize as string), (parseInt(page as string)) * parseInt(pageSize as string))
 
             // Construct expected data
             interface ISongData {
@@ -87,9 +99,21 @@ export class SongController {
                 });
             })
 
+            // Construct page data
+            interface IPageData {
+                page: number;
+                totalPage: number;
+            }
+
+            const pageData: IPageData = {
+                page: parseInt(page as string),
+                totalPage: totalPage
+            }
+
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: songsData
+                data: songsData,
+                pageData: pageData,
             });
         };
     }
