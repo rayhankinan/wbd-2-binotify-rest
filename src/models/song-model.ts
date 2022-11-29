@@ -23,6 +23,9 @@ export class Song extends BaseEntity {
     @Column()
     audioPath: string;
 
+    @Column()
+    duration: number;
+
     @ManyToOne(() => User, (user) => user.userID, { cascade: true })
     @JoinColumn({ name: "penyanyiID" })
     user: User;

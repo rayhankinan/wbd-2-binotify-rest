@@ -1,9 +1,6 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
-import { 
-    AuthToken,
-    AuthRequest 
-} from "../middlewares/authentication-middleware";
+import { AuthRequest } from "../middlewares/authentication-middleware";
 import { soapConfig } from "../config/soap-config";
 import { paginationConfig } from "../config/pagination-config";
 import fetch from "node-fetch";
@@ -27,7 +24,7 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID } : UpdateSubscription = req.body;
+            const { creatorID, subscriberID }: UpdateSubscription = req.body;
 
             var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
             fetch(url, {
@@ -86,7 +83,7 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID } : UpdateSubscription = req.body;
+            const { creatorID, subscriberID }: UpdateSubscription = req.body;
 
             var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
             fetch(url, {
