@@ -15,7 +15,7 @@ export class Song extends BaseEntity {
     songID: number;
 
     @Column()
-    judul: string;
+    title: string;
 
     @Column()
     penyanyiID: number;
