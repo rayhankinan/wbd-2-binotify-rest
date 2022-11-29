@@ -12,6 +12,17 @@ interface UpdateRequest {
     title: string;
 }
 
+interface ISongData {
+    id: number;
+    title: string;
+    duration: Number;
+}
+
+interface IPageData {
+    page: number;
+    totalPage: number;
+}
+
 export class SongController {
     store() {
         return async (req: Request, res: Response) => {
@@ -32,6 +43,7 @@ export class SongController {
             song.judul = title;
             song.penyanyiID = token.userID;
             song.audioPath = req.file!.filename;
+            song.duration = Math.ceil(getMP3Duration(req.file!.buffer) / 1000);
 
             // Buat lagu
             const newSong = await song.save();
@@ -82,33 +94,17 @@ export class SongController {
             );
 
             // Construct expected data
-            interface ISongData {
-                id: number;
-                title: string;
-                duration: Number;
-            }
-
             let songsData: ISongData[] = [];
 
             songs.forEach((song) => {
-                const buffer = fs.readFileSync(
-                    path.join(__dirname, "..", "..", "uploads", song.audioPath)
-                );
-                const duration = getMP3Duration(buffer);
-
                 songsData.push({
                     id: song.songID,
                     title: song.judul,
-                    duration: Math.ceil(duration / 1000),
+                    duration: song.duration,
                 });
             });
 
             // Construct page data
-            interface IPageData {
-                page: number;
-                totalPage: number;
-            }
-
             const pageData: IPageData = {
                 page: parseInt(page as string),
                 totalPage: totalPage,
@@ -346,24 +342,13 @@ export class SongController {
             });
 
             // Construct expected data
-            interface ISongData {
-                id: number;
-                title: string;
-                duration: Number;
-            }
-
             let songsData: ISongData[] = [];
 
             songs.forEach((song) => {
-                const buffer = fs.readFileSync(
-                    path.join(__dirname, "..", "..", "uploads", song.audioPath)
-                );
-                const duration = getMP3Duration(buffer);
-
                 songsData.push({
                     id: song.songID,
                     title: song.judul,
-                    duration: Math.ceil(duration / 1000),
+                    duration: song.duration,
                 });
             });
 
