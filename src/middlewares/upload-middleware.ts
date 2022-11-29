@@ -6,23 +6,20 @@ import multer from "multer";
 export class UploadMiddleware {
     upload(filename: string) {
         const storage = multer.diskStorage({
-            destination: function (
+            destination: (
                 req: Request,
                 file: Express.Multer.File,
                 callback: (error: Error | null, destination: string) => void
-            ) {
+            ) => {
                 callback(null, path.join(__dirname, "..", "..", "uploads"));
             },
-            filename: function (
+            filename: (
                 req: Request,
                 file: Express.Multer.File,
                 callback: (error: Error | null, destination: string) => void
-            ) {
+            ) => {
                 const uniqueSuffix = uuidv4();
-                callback(
-                    null,
-                    `${path.parse(file.originalname).name}-${uniqueSuffix}.mp3`
-                );
+                callback(null, `${uniqueSuffix}.mp3`);
             },
         });
         const upload = multer({ storage: storage });

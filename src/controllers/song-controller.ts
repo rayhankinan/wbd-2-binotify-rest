@@ -40,7 +40,7 @@ export class SongController {
 
             // Buat song baru
             const song = new Song();
-            song.judul = title;
+            song.title = title;
             song.penyanyiID = token.userID;
             song.audioPath = req.file!.filename;
             song.duration = Math.ceil(getMP3Duration(req.file!.buffer) / 1000);
@@ -77,7 +77,7 @@ export class SongController {
 
             const [songs, length] = await Promise.all([
                 Song.createQueryBuilder("song")
-                    .select(["song.songID", "song.judul", "song.duration"])
+                    .select(["song.songID", "song.title", "song.duration"])
                     .where("song.penyanyiID = :userID", {
                         userID: token.userID,
                     })
@@ -181,7 +181,7 @@ export class SongController {
             const oldFilename = song.audioPath;
 
             // Update model
-            song.judul = title;
+            song.title = title;
             song.audioPath = req.file!.filename;
 
             // Save!
@@ -242,7 +242,7 @@ export class SongController {
             }
 
             // Update model
-            song.judul = title;
+            song.title = title;
 
             // Save!
             const newSong = await song.save();
@@ -335,7 +335,7 @@ export class SongController {
             songs.forEach((song) => {
                 songsData.push({
                     id: song.songID,
-                    title: song.judul,
+                    title: song.title,
                     duration: song.duration,
                 });
             });
