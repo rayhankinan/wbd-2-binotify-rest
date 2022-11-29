@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../middlewares/authentication-middleware";
 import { soapConfig } from "../config/soap-config";
 import { paginationConfig } from "../config/pagination-config";
-import fetch from "node-fetch";
+import axios from 'axios';
 import xml2js from 'xml2js';
 
 interface SubscriptionRequest {
@@ -28,48 +28,47 @@ export class SoapController {
             const { creatorID, subscriberID }: SubscriptionRequest =
                 req.body;
 
-            var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
-            fetch(url, {
-                method: 'POST',
-                body: `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                <Body>
-                    <approveSubscribe xmlns="http://service.binotify/">
-                        <arg0 xmlns="">${creatorID}</arg0>
-                        <arg1 xmlns="">${subscriberID}</arg1>
-                    </approveSubscribe>
-                </Body>
+            try {
+                await axios.post(
+                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                    <Body>
+                        <approveSubscribe xmlns="http://service.binotify/">
+                            <arg0 xmlns="">${creatorID}</arg0>
+                            <arg1 xmlns="">${subscriberID}</arg1>
+                        </approveSubscribe>
+                    </Body>
                 </Envelope>`,
-                headers: {
-                    'Content-type': 'text/xml',
-                }
-            })
-            .then(res => res.text())
-            .then(body => {
-            xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                var response = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
-                if (response == "Subscription not found") {
-                    res.status(StatusCodes.NOT_FOUND).json({
-                        message: response,
+                {
+                    headers: {
+                        "Content-Type": "text/xml",
+                    },
+                })
+                .then((response) => {
+                    xml2js.parseString(response.data, (err, result) => {
+                        var res = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
+                        if (res == "Subscription not found") {
+                            res.status(StatusCodes.NOT_FOUND).json({
+                                message: res,
+                            });
+                        }
+                        else if (res == "Subscription accepted") {
+                            res.status(StatusCodes.OK).json({
+                                message: res,
+                            });
+                        }
+                        else {
+                            res.status(StatusCodes.BAD_REQUEST).json({
+                                message: res,
+                            });
+                        }
                     });
-                }
-                else if (response == "Subscription accepted") {
-                    res.status(StatusCodes.OK).json({
-                        message: response,
-                    });
-                }
-                else {
-                    res.status(StatusCodes.BAD_REQUEST).json({
-                        message: response,
-                    });
-                }
-            });
-            })
-            .catch(err => {
-                console.log(err);
+                });  
+            } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
-            });
+            }
         };
     }
 
@@ -88,48 +87,47 @@ export class SoapController {
             const { creatorID, subscriberID }: SubscriptionRequest =
                 req.body;
 
-            var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
-            fetch(url, {
-                method: 'POST',
-                body: `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                <Body>
-                    <rejectSubscribe xmlns="http://service.binotify/">
-                        <arg0 xmlns="">${creatorID}</arg0>
-                        <arg1 xmlns="">${subscriberID}</arg1>
-                    </rejectSubscribe>
-                </Body>
+            try {
+                await axios.post(
+                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                    <Body>
+                        <rejectSubscribe xmlns="http://service.binotify/">
+                            <arg0 xmlns="">${creatorID}</arg0>
+                            <arg1 xmlns="">${subscriberID}</arg1>
+                        </rejectSubscribe>
+                    </Body>
                 </Envelope>`,
-                headers: {
-                    'Content-type': 'text/xml',
-                }
-            })
-            .then(res => res.text())
-            .then(body => {
-            xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                var response = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0].return[0];
-                if (response == "Subscription not found") {
-                    res.status(StatusCodes.NOT_FOUND).json({
-                        message: response,
+                {
+                    headers: {
+                        "Content-Type": "text/xml",
+                    },
+                })
+                .then((response) => {
+                    xml2js.parseString(response.data, (err, result) => {
+                        var res = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
+                        if (res == "Subscription not found") {
+                            res.status(StatusCodes.NOT_FOUND).json({
+                                message: res,
+                            });
+                        }
+                        else if (res == "Subscription rejected") {
+                            res.status(StatusCodes.OK).json({
+                                message: res,
+                            });
+                        }
+                        else {
+                            res.status(StatusCodes.BAD_REQUEST).json({
+                                message: res,
+                            });
+                        }
                     });
-                }
-                else if (response == "Subscription rejectedd") {
-                    res.status(StatusCodes.OK).json({
-                        message: response,
-                    });
-                }
-                else {
-                    res.status(StatusCodes.BAD_REQUEST).json({
-                        message: response,
-                    });
-                }
-            });
-            })
-            .catch(err => {
-                console.log(err);
+                });  
+            } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
-            });
+            }
         };
     }
 
@@ -146,10 +144,10 @@ export class SoapController {
             
             const page = parseInt(req.params.page);
             let subscriptionData: SubscriptionRequest[] = [];
-            var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
-            fetch(url, {
-                method: 'POST',
-                body: `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+            try {
+                await axios.post(
+                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
                     <Body>
                         <getAllReqSubscribe xmlns="http://service.binotify/">
                             <arg0 xmlns="">${page}</arg0>
@@ -157,36 +155,33 @@ export class SoapController {
                         </getAllReqSubscribe>
                     </Body>
                 </Envelope>`,
-                headers: {
-                    'Content-type': 'text/xml',
-                }
-            })
-            .then(res => res.text())
-            .then(body => {
-                xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                    var response = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
-                    response.forEach((element: any) => {
-                        subscriptionData.push({
-                            creatorID: element.creator[0],
-                            subscriberID: element.subscriber[0],
+                {
+                    headers: {
+                        "Content-Type": "text/xml",
+                    },
+                })
+                .then((response) => {
+                    xml2js.parseString(response.data, (err, result) => {
+                        var response = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
+                        response.forEach((element: any) => {
+                            subscriptionData.push({
+                                creatorID: element.creator[0],
+                                subscriberID: element.subscriber[0],
+                            });
                         });
-                    });
-                    var pageCount = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].pageCount[0];
-                    res.status(StatusCodes.OK).json({
-                        message: ReasonPhrases.OK,
-                        data: subscriptionData,
-                        totalPage: pageCount,
+                        var pageCount = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].pageCount[0];
+                        res.status(StatusCodes.OK).json({
+                            message: ReasonPhrases.OK,
+                            data: subscriptionData,
+                            totalPage: pageCount,
+                        });
                     }); 
                 });
-            })
-            .catch(err => {
-                console.log(err);
+            } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
-                    data: subscriptionData,
-                    totalPage: 0,
                 });
-            });
+            }
         };
     }
 }
