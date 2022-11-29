@@ -159,11 +159,11 @@ export class SoapController {
                     headers: {
                         "Content-Type": "text/xml",
                     },
-                })
-                .then((response) => {
+                }
+                ).then((response) => {
                     xml2js.parseString(response.data, (err, result) => {
-                        var response = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
-                        response.forEach((element: any) => {
+                        var datas = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
+                        datas.forEach((element: any) => {
                             subscriptionData.push({
                                 creatorID: element.creator[0],
                                 subscriberID: element.subscriber[0],

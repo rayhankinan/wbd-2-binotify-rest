@@ -8,6 +8,7 @@ import { serverConfig } from "./config/server-config";
 import { dataConfig } from "./config/data-config";
 import { UserRoute } from "./routes/user-route";
 import { SongRoute } from "./routes/song-route";
+import { SoapRoute } from "./routes/soap-route";
 
 export class App {
     dataSource: DataSource;
@@ -16,6 +17,7 @@ export class App {
     constructor() {
         const userRoute = new UserRoute();
         const songRoute = new SongRoute();
+        const soapRoute = new SoapRoute();
 
         this.dataSource = new DataSource(dataConfig);
 
@@ -27,7 +29,8 @@ export class App {
             express.urlencoded({ extended: true }),
             morgan("combined"),
             userRoute.getRoute(),
-            songRoute.getRoute()
+            songRoute.getRoute(),
+            soapRoute.getRoute()
         );
     }
 
