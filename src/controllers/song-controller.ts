@@ -75,15 +75,27 @@ export class SongController {
             const page = parseInt((req.query?.page || "1") as string);
             const pageSize = parseInt((req.query?.pageSize || "5") as string);
 
-            const songs = await Song.createQueryBuilder("song")
-                .select(["song.songID", "song.judul", "song.duration"])
-                .where("song.penyanyiID = :userID", { userID: token.userID })
-                .getMany();
+            const [songs, length] = await Promise.all([
+                Song.createQueryBuilder("song")
+                    .select(["song.songID", "song.judul", "song.duration"])
+                    .where("song.penyanyiID = :userID", {
+                        userID: token.userID,
+                    })
+                    .skip((page - 1) * pageSize)
+                    .take(pageSize)
+                    .getMany(),
+                Song.createQueryBuilder("song")
+                    .select(["song.songID"])
+                    .where("song.penyanyiID = :userID", {
+                        userID: token.userID,
+                    })
+                    .getCount(),
+            ]);
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: songs.slice((page - 1) * pageSize, page * pageSize),
-                totalPage: Math.ceil(songs.length / pageSize),
+                data: songs,
+                totalPage: Math.ceil(length / pageSize),
             });
         };
     }

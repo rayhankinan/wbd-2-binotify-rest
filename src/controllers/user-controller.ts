@@ -146,16 +146,28 @@ export class UserController {
             const page = parseInt((req.query?.page || "1") as string);
             const pageSize = parseInt((req.query?.pageSize || "5") as string);
 
-            const users = await User.createQueryBuilder("user")
-                .select(["user.userID", "user.name"])
-                .where("user.isAdmin = :isAdmin", { isAdmin: false })
-                .cache("list_penyanyi", cacheConfig.cacheExpirationTime)
-                .getMany();
+            const [users, length] = await Promise.all([
+                User.createQueryBuilder("user")
+                    .select(["user.userID", "user.name"])
+                    .where("user.isAdmin = :isAdmin", { isAdmin: false })
+                    .skip((page - 1) * pageSize)
+                    .take(pageSize)
+                    .cache(
+                        `penyanyi_page_${page}`,
+                        cacheConfig.cacheExpirationTime
+                    )
+                    .getMany(),
+                User.createQueryBuilder("user")
+                    .select(["user.userID"])
+                    .where("user.isAdmin = :isAdmin", { isAdmin: false })
+                    .cache("penyanyi_count", cacheConfig.cacheExpirationTime)
+                    .getCount(),
+            ]);
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: users.slice((page - 1) * pageSize, page * pageSize),
-                totalPage: Math.ceil(users.length / pageSize),
+                data: users,
+                totalPage: Math.ceil(length / pageSize),
             });
         };
     }
@@ -163,7 +175,6 @@ export class UserController {
     check() {
         return async (req: Request, res: Response) => {
             const { token } = req as AuthRequest;
-
             if (!token) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: ReasonPhrases.UNAUTHORIZED,
