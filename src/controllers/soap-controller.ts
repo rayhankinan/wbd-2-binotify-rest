@@ -7,7 +7,7 @@ import { paginationConfig } from "../config/pagination-config";
 import fetch from "node-fetch";
 import xml2js from 'xml2js';
 
-interface UpdateSubscriptionRequest {
+interface SubscriptionRequest {
     creatorID: number;
     subscriberID: number;
 }
@@ -25,7 +25,7 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID }: UpdateSubscriptionRequest =
+            const { creatorID, subscriberID }: SubscriptionRequest =
                 req.body;
 
             var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
@@ -46,7 +46,7 @@ export class SoapController {
             .then(res => res.text())
             .then(body => {
             xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                var response = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0]['return'][0];
+                var response = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
                 if (response == "Subscription not found") {
                     res.status(StatusCodes.NOT_FOUND).json({
                         message: response,
@@ -66,8 +66,8 @@ export class SoapController {
             })
             .catch(err => {
                 console.log(err);
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: ReasonPhrases.BAD_REQUEST,
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
             });
         };
@@ -85,7 +85,7 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID }: UpdateSubscriptionRequest =
+            const { creatorID, subscriberID }: SubscriptionRequest =
                 req.body;
 
             var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
@@ -106,7 +106,7 @@ export class SoapController {
             .then(res => res.text())
             .then(body => {
             xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                var response = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0]['return'][0];
+                var response = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0].return[0];
                 if (response == "Subscription not found") {
                     res.status(StatusCodes.NOT_FOUND).json({
                         message: response,
@@ -126,8 +126,8 @@ export class SoapController {
             })
             .catch(err => {
                 console.log(err);
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: ReasonPhrases.BAD_REQUEST,
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
             });
         };
@@ -145,7 +145,7 @@ export class SoapController {
             }
             
             const page = parseInt(req.params.page);
-
+            let subscriptionData: SubscriptionRequest[] = [];
             var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
             fetch(url, {
                 method: 'POST',
@@ -163,29 +163,28 @@ export class SoapController {
             })
             .then(res => res.text())
             .then(body => {
-            xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
-                var response = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0]['return'][0];
-                if (response == "Subscription not found") {
-                    res.status(StatusCodes.NOT_FOUND).json({
-                        message: response,
+                xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
+                    var response = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
+                    response.forEach((element: any) => {
+                        subscriptionData.push({
+                            creatorID: element.creator[0],
+                            subscriberID: element.subscriber[0],
+                        });
                     });
-                }
-                else if (response == "Subscription rejectedd") {
+                    var pageCount = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].pageCount[0];
                     res.status(StatusCodes.OK).json({
-                        message: response,
-                    });
-                }
-                else {
-                    res.status(StatusCodes.BAD_REQUEST).json({
-                        message: response,
-                    });
-                }
-            });
+                        message: ReasonPhrases.OK,
+                        data: subscriptionData,
+                        totalPage: pageCount,
+                    }); 
+                });
             })
             .catch(err => {
                 console.log(err);
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: ReasonPhrases.BAD_REQUEST,
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: ReasonPhrases.INTERNAL_SERVER_ERROR,
+                    data: subscriptionData,
+                    totalPage: 0,
                 });
             });
         };
