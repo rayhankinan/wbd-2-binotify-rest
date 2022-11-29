@@ -19,10 +19,10 @@ export class SoapRoute {
         return Router()
             .post("/subscribe/accept",this.soapController.accept())
             .post("/subscribe/reject", this.soapController.reject())
-            // .post(
-            //     "/subscribe",
-            //     this.authenticationMiddleware.authenticate(),
-            //     this.soapController.index()
-            // )
+            .get(
+                "/subscribe/:page",
+                this.authenticationMiddleware.authenticate(),
+                this.soapController.index()
+            )
     }
 }

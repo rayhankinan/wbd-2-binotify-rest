@@ -1,36 +1,41 @@
 import { soapConfig } from "../config/soap-config";
-import $ from "jquery";
-import {parseString} from 'xml2js';
+import fetch from "node-fetch";
+import xml2js from 'xml2js';
 
 export class SOAPService {
     async validate(creatorID: number, subscriberID: number) {
         // TO DO: @Aira
         // Tambahkan logika validasi ke service SOAP di sini
-        var result = $.Deferred();
-        var url = "https://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url);
-        xhr.setRequestHeader("Content-Type", "text/xml");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                var response = xhr.responseText;
-                parseString(response, (err: any, result: any) => {
-                    const json = JSON.stringify(result, null, 4)
-                    console.log(json);
-                    result = true;
-                })
-            }
-        };
-        var data = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+        var url = "http://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
+        return fetch(url, {
+            method: 'POST',
+            body: `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
             <Body>
                 <checkStatus xmlns="http://service.binotify/">
                     <arg0 xmlns="">${creatorID}</arg0>
                     <arg1 xmlns="">${subscriberID}</arg1>
                 </checkStatus>
             </Body>
-        </Envelope>`;
-        xhr.send(data);
-
-        return result;
+            </Envelope>`,
+            headers: {
+                'Content-type': 'text/xml',
+            }
+        })
+        .then(res => res.text())
+        .then(body => {
+        xml2js.parseString(body, {mergeAttrs : true}, async (err, result) => {
+            var response = result['S:Envelope']['S:Body'][0]['ns2:checkStatusResponse'][0]['return'][0];
+            if (response == "ACCEPTED") {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+        })
+        .catch(err => {
+            console.log(err);
+            return false;
+        });
     }
 }
