@@ -1,14 +1,11 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
-import { 
-    AuthToken,
-    AuthRequest 
-} from "../middlewares/authentication-middleware";
+import { AuthRequest } from "../middlewares/authentication-middleware";
 
 import { Song } from "../models/song-model";
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 import { getMP3Duration } from "../utils/get-mp3-duration";
 
 interface UpdateRequest {
@@ -47,7 +44,7 @@ export class SongController {
 
             res.status(StatusCodes.CREATED).json({
                 message: ReasonPhrases.CREATED,
-            })
+            });
         };
     }
 
@@ -71,13 +68,18 @@ export class SongController {
 
             // Fetch semua lagu milik requester
             let songs = await Song.findBy({
-                penyanyiID: token.userID
+                penyanyiID: token.userID,
             });
 
-            const totalPage = Math.ceil(songs.length / parseInt(pageSize as string));
+            const totalPage = Math.ceil(
+                songs.length / parseInt(pageSize as string)
+            );
 
             // Slice according to page
-            songs = songs.slice((parseInt(page as string) - 1) * parseInt(pageSize as string), (parseInt(page as string)) * parseInt(pageSize as string))
+            songs = songs.slice(
+                (parseInt(page as string) - 1) * parseInt(pageSize as string),
+                parseInt(page as string) * parseInt(pageSize as string)
+            );
 
             // Construct expected data
             interface ISongData {
@@ -88,16 +90,18 @@ export class SongController {
 
             let songsData: ISongData[] = [];
 
-            songs.forEach(song => {
-                const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
-                const duration = getMP3Duration(buffer)
-                
+            songs.forEach((song) => {
+                const buffer = fs.readFileSync(
+                    path.join(__dirname, "..", "..", "uploads", song.audioPath)
+                );
+                const duration = getMP3Duration(buffer);
+
                 songsData.push({
                     id: song.songID,
                     title: song.judul,
-                    duration: Math.ceil(duration / 1000)
+                    duration: Math.ceil(duration / 1000),
                 });
-            })
+            });
 
             // Construct page data
             interface IPageData {
@@ -107,8 +111,8 @@ export class SongController {
 
             const pageData: IPageData = {
                 page: parseInt(page as string),
-                totalPage: totalPage
-            }
+                totalPage: totalPage,
+            };
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
@@ -133,7 +137,7 @@ export class SongController {
 
             // Fetch semua lagu milik requester
             const song = await Song.findOneBy({
-                songID
+                songID,
             });
 
             // Apabila tidak ditemukan ...
@@ -152,7 +156,9 @@ export class SongController {
                 return;
             }
 
-            res.sendFile(path.join(__dirname, "..", "..", "uploads", song.audioPath));
+            res.sendFile(
+                path.join(__dirname, "..", "..", "uploads", song.audioPath)
+            );
         };
     }
 
@@ -168,13 +174,13 @@ export class SongController {
             }
 
             // Parse request body
-            const { title } : UpdateRequest = req.body;
+            const { title }: UpdateRequest = req.body;
 
             // Parse request param
             const songID = parseInt(req.params.id);
 
             const song = await Song.findOneBy({
-                songID
+                songID,
             });
 
             // Apabila tidak ditemukan ...
@@ -192,7 +198,7 @@ export class SongController {
                 });
                 return;
             }
-            
+
             // Get old filename
             const oldFilename = song.audioPath;
 
@@ -210,10 +216,12 @@ export class SongController {
             }
 
             // Delete old file
-            fs.unlinkSync(path.join(__dirname, "..", "..", "uploads", oldFilename));
+            fs.unlinkSync(
+                path.join(__dirname, "..", "..", "uploads", oldFilename)
+            );
 
             res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK
+                message: ReasonPhrases.OK,
             });
         };
     }
@@ -230,13 +238,13 @@ export class SongController {
             }
 
             // Parse request body
-            const { title } : UpdateRequest = req.body;
+            const { title }: UpdateRequest = req.body;
 
             // Parse request param
             const songID = parseInt(req.params.id);
 
             const song = await Song.findOneBy({
-                songID
+                songID,
             });
 
             // Apabila tidak ditemukan ...
@@ -254,7 +262,7 @@ export class SongController {
                 });
                 return;
             }
-            
+
             // Update model
             song.judul = title;
 
@@ -268,7 +276,7 @@ export class SongController {
             }
 
             res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK
+                message: ReasonPhrases.OK,
             });
         };
     }
@@ -288,7 +296,7 @@ export class SongController {
             const songID = parseInt(req.params.id);
 
             const song = await Song.findOneBy({
-                songID
+                songID,
             });
 
             // Apabila tidak ditemukan ...
@@ -304,7 +312,7 @@ export class SongController {
                 });
                 return;
             }
-            
+
             // Delete!
             const newSong = await song.remove();
             if (!newSong) {
@@ -315,10 +323,12 @@ export class SongController {
             }
 
             // Delete from storage
-            fs.unlinkSync(path.join(__dirname, "..", "..", "uploads", newSong.audioPath));
+            fs.unlinkSync(
+                path.join(__dirname, "..", "..", "uploads", newSong.audioPath)
+            );
 
             res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK
+                message: ReasonPhrases.OK,
             });
         };
     }
@@ -332,7 +342,7 @@ export class SongController {
 
             // Fetch semua lagu milik requester
             let songs = await Song.findBy({
-                penyanyiID: parseInt(artistID)
+                penyanyiID: parseInt(artistID),
             });
 
             // Construct expected data
@@ -344,16 +354,18 @@ export class SongController {
 
             let songsData: ISongData[] = [];
 
-            songs.forEach(song => {
-                const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
-                const duration = getMP3Duration(buffer)
-                
+            songs.forEach((song) => {
+                const buffer = fs.readFileSync(
+                    path.join(__dirname, "..", "..", "uploads", song.audioPath)
+                );
+                const duration = getMP3Duration(buffer);
+
                 songsData.push({
                     id: song.songID,
                     title: song.judul,
-                    duration: Math.ceil(duration / 1000)
+                    duration: Math.ceil(duration / 1000),
                 });
-            })
+            });
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
@@ -370,7 +382,7 @@ export class SongController {
 
             // Fetch semua lagu milik requester
             const song = await Song.findOneBy({
-                songID
+                songID,
             });
 
             // Apabila tidak ditemukan ...
@@ -381,7 +393,9 @@ export class SongController {
                 return;
             }
 
-            res.sendFile(path.join(__dirname, "..", "..", "uploads", song.audioPath));
+            res.sendFile(
+                path.join(__dirname, "..", "..", "uploads", song.audioPath)
+            );
         };
     }
 }

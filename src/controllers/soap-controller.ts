@@ -1,9 +1,6 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
-import { 
-    AuthToken,
-    AuthRequest 
-} from "../middlewares/authentication-middleware";
+import { AuthRequest } from "../middlewares/authentication-middleware";
 import { soapConfig } from "../config/soap-config";
 import { parseString } from "xml2js";
 
@@ -25,9 +22,9 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID } : UpdateSubscription = req.body;
+            const { creatorID, subscriberID }: UpdateSubscription = req.body;
 
-            var url = "https://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
+            var url = `https://${soapConfig.host}:${soapConfig.port}/api/subscribe`;
             var xhr = new XMLHttpRequest();
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "text/xml");
@@ -36,17 +33,16 @@ export class SoapController {
                     if (xhr.status === 200) {
                         var response = xhr.responseText;
                         parseString(response, (err: any, result: any) => {
-                            const json = JSON.stringify(result, null, 4)
+                            const json = JSON.stringify(result, null, 4);
                             console.log(json);
                             res.status(StatusCodes.CREATED).json({
                                 message: ReasonPhrases.CREATED,
-                            })
-                        })
-                    }
-                    else {
+                            });
+                        });
+                    } else {
                         res.status(StatusCodes.BAD_REQUEST).json({
                             message: ReasonPhrases.BAD_REQUEST,
-                        })
+                        });
                     }
                 }
             };
@@ -74,9 +70,9 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID } : UpdateSubscription = req.body;
+            const { creatorID, subscriberID }: UpdateSubscription = req.body;
 
-            var url = "https://"+soapConfig.host+":"+soapConfig.port+"/api/subscribe";
+            var url = `https://${soapConfig.host}:${soapConfig.port}/api/subscribe`;
             var xhr = new XMLHttpRequest();
             xhr.open("POST", url);
             xhr.setRequestHeader("Content-Type", "text/xml");
@@ -85,17 +81,16 @@ export class SoapController {
                     if (xhr.status === 200) {
                         var response = xhr.responseText;
                         parseString(response, (err: any, result: any) => {
-                            const json = JSON.stringify(result, null, 4)
+                            const json = JSON.stringify(result, null, 4);
                             console.log(json);
                             res.status(StatusCodes.CREATED).json({
                                 message: ReasonPhrases.CREATED,
-                            })
-                        })
-                    }
-                    else {
+                            });
+                        });
+                    } else {
                         res.status(StatusCodes.BAD_REQUEST).json({
                             message: ReasonPhrases.BAD_REQUEST,
-                        })
+                        });
                     }
                 }
             };

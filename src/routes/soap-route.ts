@@ -17,12 +17,17 @@ export class SoapRoute {
 
     getRoute() {
         return Router()
-            .post("/subscribe/accept",this.soapController.accept())
-            .post("/subscribe/reject", this.soapController.reject())
-            // .post(
-            //     "/subscribe",
-            //     this.authenticationMiddleware.authenticate(),
-            //     this.soapController.index()
-            // )
+            .post(
+                "/subscribe/accept",
+                this.authenticationMiddleware.authenticate(),
+                this.soapMiddleware.validate(),
+                this.soapController.accept()
+            )
+            .post(
+                "/subscribe/reject",
+                this.authenticationMiddleware.authenticate(),
+                this.soapMiddleware.validate(),
+                this.soapController.reject()
+            );
     }
 }
