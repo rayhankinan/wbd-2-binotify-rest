@@ -16,21 +16,28 @@ export interface AuthRequest extends Request {
 export class AuthenticationMiddleware {
     authenticate() {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const token = req.header("Authorization")?.replace("Bearer ", "");
-            
-            if (!token) {
+            try {
+                const token = req
+                    .header("Authorization")
+                    ?.replace("Bearer ", "");
+                if (!token) {
+                    res.status(StatusCodes.UNAUTHORIZED).json({
+                        message: ReasonPhrases.UNAUTHORIZED,
+                    });
+                    return;
+                }
+
+                (req as AuthRequest).token = jwt.verify(
+                    token,
+                    jwtConfig.secret
+                ) as AuthToken;
+
+                next();
+            } catch (error) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: ReasonPhrases.UNAUTHORIZED,
                 });
-                return;
             }
-
-            (req as AuthRequest).token = jwt.verify(
-                token,
-                jwtConfig.secret
-            ) as AuthToken;
-
-            next();
         };
     }
 }
