@@ -72,48 +72,18 @@ export class SongController {
             }
 
             // Get page query
-            let { page, pageSize } = req.query;
-            if (!page || !pageSize) {
-                page = "1";
-                pageSize = "5";
-            }
+            const page = parseInt((req.query?.page || "1") as string);
+            const pageSize = parseInt((req.query?.pageSize || "5") as string);
 
-            // Fetch semua lagu milik requester
-            let songs = await Song.findBy({
-                penyanyiID: token.userID,
-            });
-
-            const totalPage = Math.ceil(
-                songs.length / parseInt(pageSize as string)
-            );
-
-            // Slice according to page
-            songs = songs.slice(
-                (parseInt(page as string) - 1) * parseInt(pageSize as string),
-                parseInt(page as string) * parseInt(pageSize as string)
-            );
-
-            // Construct expected data
-            let songsData: ISongData[] = [];
-
-            songs.forEach((song) => {
-                songsData.push({
-                    id: song.songID,
-                    title: song.judul,
-                    duration: song.duration,
-                });
-            });
-
-            // Construct page data
-            const pageData: IPageData = {
-                page: parseInt(page as string),
-                totalPage: totalPage,
-            };
+            const songs = await Song.createQueryBuilder("song")
+                .select(["song.songID", "song.judul", "song.duration"])
+                .where("song.penyanyiID = :userID", { userID: token.userID })
+                .getMany();
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: songsData,
-                pageData: pageData,
+                data: songs.slice((page - 1) * pageSize, page * pageSize),
+                totalPage: Math.ceil(songs.length / pageSize),
             });
         };
     }
@@ -211,7 +181,7 @@ export class SongController {
                 return;
             }
 
-            // Delete old file
+            // Delete old file from storage
             fs.unlinkSync(
                 path.join(__dirname, "..", "..", "uploads", oldFilename)
             );
@@ -310,8 +280,8 @@ export class SongController {
             }
 
             // Delete!
-            const newSong = await song.remove();
-            if (!newSong) {
+            const deletedSong = await song.remove();
+            if (!deletedSong) {
                 res.status(StatusCodes.BAD_REQUEST).json({
                     message: ReasonPhrases.BAD_REQUEST,
                 });
@@ -320,7 +290,13 @@ export class SongController {
 
             // Delete from storage
             fs.unlinkSync(
-                path.join(__dirname, "..", "..", "uploads", newSong.audioPath)
+                path.join(
+                    __dirname,
+                    "..",
+                    "..",
+                    "uploads",
+                    deletedSong.audioPath
+                )
             );
 
             res.status(StatusCodes.OK).json({
@@ -334,15 +310,15 @@ export class SongController {
             // TODO: Authenticate subscription
 
             // Get page query
-            let { artistID } = req.params;
+            const { artistID } = req.params;
 
             // Fetch semua lagu milik requester
-            let songs = await Song.findBy({
+            const songs = await Song.findBy({
                 penyanyiID: parseInt(artistID),
             });
 
             // Construct expected data
-            let songsData: ISongData[] = [];
+            const songsData: ISongData[] = [];
 
             songs.forEach((song) => {
                 songsData.push({

@@ -88,21 +88,21 @@ export class UserController {
 
             // Cek apakah data sudah ada ...
             const existingUserWithUsername = await User.findOneBy({
-                username
-            })
+                username,
+            });
             if (existingUserWithUsername) {
                 res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Username already taken!"
+                    message: "Username already taken!",
                 });
                 return;
             }
 
             const existingUserWithEmail = await User.findOneBy({
-                email
-            })
+                email,
+            });
             if (existingUserWithEmail) {
                 res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Email already taken!"
+                    message: "Email already taken!",
                 });
                 return;
             }
@@ -135,11 +135,16 @@ export class UserController {
         return async (req: Request, res: Response) => {
             const { token } = req as AuthRequest;
             if (!token || !token.isAdmin) {
+                // Endpoint hanya bisa diakses oleh admin
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: ReasonPhrases.UNAUTHORIZED,
                 });
                 return;
             }
+
+            // Get page query
+            const page = parseInt((req.query?.page || "1") as string);
+            const pageSize = parseInt((req.query?.pageSize || "5") as string);
 
             const users = await User.createQueryBuilder("user")
                 .select(["user.userID", "user.name"])
@@ -149,7 +154,8 @@ export class UserController {
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: users,
+                data: users.slice((page - 1) * pageSize, page * pageSize),
+                totalPage: Math.ceil(users.length / pageSize),
             });
         };
     }
@@ -157,7 +163,7 @@ export class UserController {
     check() {
         return async (req: Request, res: Response) => {
             const { token } = req as AuthRequest;
-            
+
             if (!token) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     message: ReasonPhrases.UNAUTHORIZED,
@@ -167,8 +173,8 @@ export class UserController {
 
             res.status(StatusCodes.OK).json({
                 userID: token.userID,
-                isAdmin: token.isAdmin
+                isAdmin: token.isAdmin,
             });
-        }
+        };
     }
 }
