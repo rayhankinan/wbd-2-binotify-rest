@@ -46,20 +46,20 @@ export class SoapController {
                 })
                 .then((response) => {
                     xml2js.parseString(response.data, (err, result) => {
-                        var res = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
-                        if (res == "Subscription not found") {
+                        var datas = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
+                        if (datas == "Subscription not found") {
                             res.status(StatusCodes.NOT_FOUND).json({
-                                message: res,
+                                message: datas,
                             });
                         }
-                        else if (res == "Subscription accepted") {
+                        else if (datas == "Subscription accepted") {
                             res.status(StatusCodes.OK).json({
-                                message: res,
+                                message: datas,
                             });
                         }
                         else {
                             res.status(StatusCodes.BAD_REQUEST).json({
-                                message: res,
+                                message: datas,
                             });
                         }
                     });
@@ -102,23 +102,22 @@ export class SoapController {
                     headers: {
                         "Content-Type": "text/xml",
                     },
-                })
-                .then((response) => {
+                }).then((response) => {
                     xml2js.parseString(response.data, (err, result) => {
-                        var res = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
-                        if (res == "Subscription not found") {
+                        var datas = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0].return[0];
+                        if (datas == "Subscription not found") {
                             res.status(StatusCodes.NOT_FOUND).json({
-                                message: res,
+                                message: datas,
                             });
                         }
-                        else if (res == "Subscription rejected") {
+                        else if (datas == "Subscription rejected") {
                             res.status(StatusCodes.OK).json({
-                                message: res,
+                                message: datas,
                             });
                         }
                         else {
                             res.status(StatusCodes.BAD_REQUEST).json({
-                                message: res,
+                                message: datas,
                             });
                         }
                     });
