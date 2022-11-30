@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 
 import { AuthRequest } from "../middlewares/authentication-middleware";
 import { soapConfig } from "../config/soap-config";
-import axios from 'axios';
-import xml2js from 'xml2js';
+import axios from "axios";
+import xml2js from "xml2js";
 
 interface SubscriptionRequest {
     creatorID: number;
@@ -31,49 +31,52 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID }: SubscriptionRequest =
-                req.body;
+            const { creatorID, subscriberID }: SubscriptionRequest = req.body;
 
             try {
-                await axios.post(
-                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
-                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                    <Body>
-                        <approveSubscribe xmlns="http://service.binotify/">
-                            <arg0 xmlns="">${creatorID}</arg0>
-                            <arg1 xmlns="">${subscriberID}</arg1>
-                        </approveSubscribe>
-                    </Body>
-                </Envelope>`,
-                {
-                    headers: {
-                        "Content-Type": "text/xml",
-                    },
-                })
-                .then((response) => {
-                    xml2js.parseString(response.data, (err, result) => {
-                        var datas = result['S:Envelope']['S:Body'][0]['ns2:approveSubscribeResponse'][0].return[0];
-                        if (datas == "Subscription not found") {
-                            res.status(StatusCodes.NOT_FOUND).json({
-                                message: datas,
-                            });
-                        }
-                        else if (datas == "Subscription accepted") {
-                            res.status(StatusCodes.OK).json({
-                                message: datas,
-                            });
-                        }
-                        else {
-                            res.status(StatusCodes.BAD_REQUEST).json({
-                                message: datas,
-                            });
-                        }
+                const response = await axios.post<string>(
+                    `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                    `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                            <Body>
+                                <approveSubscribe xmlns="http://service.binotify/">
+                                    <arg0 xmlns="">${creatorID}</arg0>
+                                    <arg1 xmlns="">${subscriberID}</arg1>
+                                </approveSubscribe>
+                            </Body>
+                        </Envelope>`,
+                    {
+                        headers: {
+                            "Content-Type": "text/xml",
+                        },
+                    }
+                );
+                const xml = await xml2js.parseStringPromise(response.data);
+                const result =
+                    xml["S:Envelope"]["S:Body"][0][
+                        "ns2:approveSubscribeResponse"
+                    ][0].return[0];
+
+                if (result === "Subscription not found") {
+                    res.status(StatusCodes.NOT_FOUND).json({
+                        message: result,
                     });
-                });  
+                    return;
+                } else if (result === "Subscription accepted") {
+                    res.status(StatusCodes.OK).json({
+                        message: result,
+                    });
+                    return;
+                } else {
+                    res.status(StatusCodes.BAD_REQUEST).json({
+                        message: result,
+                    });
+                    return;
+                }
             } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
+                return;
             }
         };
     }
@@ -90,48 +93,52 @@ export class SoapController {
             }
 
             // Parse request body
-            const { creatorID, subscriberID }: SubscriptionRequest =
-                req.body;
+            const { creatorID, subscriberID }: SubscriptionRequest = req.body;
 
             try {
-                await axios.post(
-                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
-                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                    <Body>
-                        <rejectSubscribe xmlns="http://service.binotify/">
-                            <arg0 xmlns="">${creatorID}</arg0>
-                            <arg1 xmlns="">${subscriberID}</arg1>
-                        </rejectSubscribe>
-                    </Body>
-                </Envelope>`,
-                {
-                    headers: {
-                        "Content-Type": "text/xml",
-                    },
-                }).then((response) => {
-                    xml2js.parseString(response.data, (err, result) => {
-                        var datas = result['S:Envelope']['S:Body'][0]['ns2:rejectSubscribeResponse'][0].return[0];
-                        if (datas == "Subscription not found") {
-                            res.status(StatusCodes.NOT_FOUND).json({
-                                message: datas,
-                            });
-                        }
-                        else if (datas == "Subscription rejected") {
-                            res.status(StatusCodes.OK).json({
-                                message: datas,
-                            });
-                        }
-                        else {
-                            res.status(StatusCodes.BAD_REQUEST).json({
-                                message: datas,
-                            });
-                        }
+                const response = await axios.post<string>(
+                    `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                    `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                            <Body>
+                                <rejectSubscribe xmlns="http://service.binotify/">
+                                    <arg0 xmlns="">${creatorID}</arg0>
+                                    <arg1 xmlns="">${subscriberID}</arg1>
+                                </rejectSubscribe>
+                            </Body>
+                        </Envelope>`,
+                    {
+                        headers: {
+                            "Content-Type": "text/xml",
+                        },
+                    }
+                );
+                const xml = await xml2js.parseStringPromise(response.data);
+                const result =
+                    xml["S:Envelope"]["S:Body"][0][
+                        "ns2:rejectSubscribeResponse"
+                    ][0].return[0];
+
+                if (result === "Subscription not found") {
+                    res.status(StatusCodes.NOT_FOUND).json({
+                        message: result,
                     });
-                });  
+                    return;
+                } else if (result === "Subscription rejected") {
+                    res.status(StatusCodes.OK).json({
+                        message: result,
+                    });
+                    return;
+                } else {
+                    res.status(StatusCodes.BAD_REQUEST).json({
+                        message: result,
+                    });
+                    return;
+                }
             } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
+                return;
             }
         };
     }
@@ -146,49 +153,58 @@ export class SoapController {
                 });
                 return;
             }
-            
+
             const page = parseInt((req.query?.page || "1") as string);
             const pageSize = parseInt((req.query?.pageSize || "5") as string);
             let subscriptionData: SubscriptionData[] = [];
             try {
-                await axios.post(
-                `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
-                `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                    <Body>
-                        <getAllReqSubscribe xmlns="http://service.binotify/">
-                            <arg0 xmlns="">${page}</arg0>
-                            <arg1 xmlns="">${pageSize}</arg1>
-                        </getAllReqSubscribe>
-                    </Body>
-                </Envelope>`,
-                {
-                    headers: {
-                        "Content-Type": "text/xml",
-                    },
-                }
-                ).then((response) => {
-                    xml2js.parseString(response.data, (err, result) => {
-                        var datas = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
-                        datas.forEach((element: any) => {
-                            subscriptionData.push({
-                                creatorID: element.creatorID[0],
-                                subscriberID: element.subscriberID[0],
-                                creatorName: element.creatorName[0],
-                                subscriberName: element.subscriberName[0],
-                            });
-                        });
-                        var pageCount = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].pageCount[0];
-                        res.status(StatusCodes.OK).json({
-                            message: ReasonPhrases.OK,
-                            data: subscriptionData,
-                            totalPage: pageCount,
-                        });
-                    }); 
+                const response = await axios.post<string>(
+                    `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
+                    `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                            <Body>
+                                <getAllReqSubscribe xmlns="http://service.binotify/">
+                                    <arg0 xmlns="">${page}</arg0>
+                                    <arg1 xmlns="">${pageSize}</arg1>
+                                </getAllReqSubscribe>
+                            </Body>
+                        </Envelope>`,
+                    {
+                        headers: {
+                            "Content-Type": "text/xml",
+                        },
+                    }
+                );
+                const xml = await xml2js.parseStringPromise(response.data);
+
+                const results =
+                    xml["S:Envelope"]["S:Body"][0][
+                        "ns2:getAllReqSubscribeResponse"
+                    ][0].return[0].data;
+                results.forEach((result: any) => {
+                    subscriptionData.push({
+                        creatorID: result.creatorID[0],
+                        subscriberID: result.subscriberID[0],
+                        creatorName: result.creatorName[0],
+                        subscriberName: result.subscriberName[0],
+                    });
                 });
+
+                const pageCount =
+                    xml["S:Envelope"]["S:Body"][0][
+                        "ns2:getAllReqSubscribeResponse"
+                    ][0].return[0].pageCount[0];
+
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: subscriptionData,
+                    totalPage: pageCount,
+                });
+                return;
             } catch (error) {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: ReasonPhrases.INTERNAL_SERVER_ERROR,
                 });
+                return;
             }
         };
     }
