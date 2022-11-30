@@ -11,6 +11,13 @@ interface SubscriptionRequest {
     subscriberID: number;
 }
 
+interface SubscriptionData {
+    creatorID: number;
+    subscriberID: number;
+    creatorName: string;
+    subscriberName: string;
+}
+
 export class SoapController {
     accept() {
         return async (req: Request, res: Response) => {
@@ -142,7 +149,7 @@ export class SoapController {
             
             const page = parseInt((req.query?.page || "1") as string);
             const pageSize = parseInt((req.query?.pageSize || "5") as string);
-            let subscriptionData: SubscriptionRequest[] = [];
+            let subscriptionData: SubscriptionData[] = [];
             try {
                 await axios.post(
                 `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
@@ -164,8 +171,10 @@ export class SoapController {
                         var datas = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].data;
                         datas.forEach((element: any) => {
                             subscriptionData.push({
-                                creatorID: element.creator[0],
-                                subscriberID: element.subscriber[0],
+                                creatorID: element.creatorID[0],
+                                subscriberID: element.subscriberID[0],
+                                creatorName: element.creatorName[0],
+                                subscriberName: element.subscriberName[0],
                             });
                         });
                         var pageCount = result['S:Envelope']['S:Body'][0]['ns2:getAllReqSubscribeResponse'][0].return[0].pageCount[0];
