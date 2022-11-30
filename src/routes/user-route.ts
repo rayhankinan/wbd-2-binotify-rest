@@ -17,9 +17,7 @@ export class UserRoute {
             .post("/user/token", this.userController.token())
             .post("/user", this.userController.store())
             .get(
-                "/user",
-                this.authenticationMiddleware.authenticate(),
-                this.userController.index()
+                "/user", this.userController.index()
             )
             .get(
                 "/user/check", 

@@ -133,14 +133,6 @@ export class UserController {
 
     index() {
         return async (req: Request, res: Response) => {
-            const { token } = req as AuthRequest;
-            if (!token || !token.isAdmin) {
-                // Endpoint hanya bisa diakses oleh admin
-                res.status(StatusCodes.UNAUTHORIZED).json({
-                    message: ReasonPhrases.UNAUTHORIZED,
-                });
-                return;
-            }
 
             // Get page query
             const page = parseInt((req.query?.page || "1") as string);
