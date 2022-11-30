@@ -17,10 +17,14 @@ export class SoapRoute {
 
     getRoute() {
         return Router()
-            .post("/subscribe/accept",this.soapController.accept())
-            .post("/subscribe/reject", this.soapController.reject())
+            .post("/subscribe/accept",
+            this.authenticationMiddleware.authenticate(),
+            this.soapController.accept())
+            .post("/subscribe/reject", 
+            this.authenticationMiddleware.authenticate(),
+            this.soapController.reject())
             .get(
-                "/subscribe/:page",
+                "/subscribe",
                 this.authenticationMiddleware.authenticate(),
                 this.soapController.index()
             )

@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 
 import { AuthRequest } from "../middlewares/authentication-middleware";
 import { soapConfig } from "../config/soap-config";
-import { paginationConfig } from "../config/pagination-config";
 import axios from 'axios';
 import xml2js from 'xml2js';
 
@@ -141,7 +140,8 @@ export class SoapController {
                 return;
             }
             
-            const page = parseInt(req.params.page);
+            const page = parseInt((req.query?.page || "1") as string);
+            const pageSize = parseInt((req.query?.pageSize || "5") as string);
             let subscriptionData: SubscriptionRequest[] = [];
             try {
                 await axios.post(
@@ -150,7 +150,7 @@ export class SoapController {
                     <Body>
                         <getAllReqSubscribe xmlns="http://service.binotify/">
                             <arg0 xmlns="">${page}</arg0>
-                            <arg1 xmlns="">${paginationConfig.size}</arg1>
+                            <arg1 xmlns="">${pageSize}</arg1>
                         </getAllReqSubscribe>
                     </Body>
                 </Envelope>`,
