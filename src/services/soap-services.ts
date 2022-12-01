@@ -4,19 +4,17 @@ import xml2js from "xml2js";
 
 export class SOAPService {
     async validate(creatorID: number, subscriberID: number) {
-        // TO DO: @Aira
-        // Tambahkan logika validasi ke service SOAP di sini
         try {
             const response = await axios.post<string>(
                 `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
                 `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                        <Body>
-                            <checkStatus xmlns="http://service.binotify/">
-                                <arg0 xmlns="">${creatorID}</arg0>
-                                <arg1 xmlns="">${subscriberID}</arg1>
-                            </checkStatus>
-                        </Body>
-                    </Envelope>`,
+                    <Body>
+                        <checkStatus xmlns="http://service.binotify/">
+                            <arg0 xmlns="">${creatorID}</arg0>
+                            <arg1 xmlns="">${subscriberID}</arg1>
+                        </checkStatus>
+                    </Body>
+                </Envelope>`,
                 {
                     headers: {
                         "Content-Type": "text/xml",

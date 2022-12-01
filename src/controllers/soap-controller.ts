@@ -37,13 +37,13 @@ export class SoapController {
                 const response = await axios.post<string>(
                     `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
                     `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                            <Body>
-                                <approveSubscribe xmlns="http://service.binotify/">
-                                    <arg0 xmlns="">${creatorID}</arg0>
-                                    <arg1 xmlns="">${subscriberID}</arg1>
-                                </approveSubscribe>
-                            </Body>
-                        </Envelope>`,
+                        <Body>
+                            <approveSubscribe xmlns="http://service.binotify/">
+                                <arg0 xmlns="">${creatorID}</arg0>
+                                <arg1 xmlns="">${subscriberID}</arg1>
+                            </approveSubscribe>
+                        </Body>
+                    </Envelope>`,
                     {
                         headers: {
                             "Content-Type": "text/xml",
@@ -99,13 +99,13 @@ export class SoapController {
                 const response = await axios.post<string>(
                     `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
                     `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                            <Body>
-                                <rejectSubscribe xmlns="http://service.binotify/">
-                                    <arg0 xmlns="">${creatorID}</arg0>
-                                    <arg1 xmlns="">${subscriberID}</arg1>
-                                </rejectSubscribe>
-                            </Body>
-                        </Envelope>`,
+                        <Body>
+                            <rejectSubscribe xmlns="http://service.binotify/">
+                                <arg0 xmlns="">${creatorID}</arg0>
+                                <arg1 xmlns="">${subscriberID}</arg1>
+                            </rejectSubscribe>
+                        </Body>
+                    </Envelope>`,
                     {
                         headers: {
                             "Content-Type": "text/xml",
@@ -161,13 +161,13 @@ export class SoapController {
                 const response = await axios.post<string>(
                     `http://${soapConfig.host}:${soapConfig.port}/api/subscribe`,
                     `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                            <Body>
-                                <getAllReqSubscribe xmlns="http://service.binotify/">
-                                    <arg0 xmlns="">${page}</arg0>
-                                    <arg1 xmlns="">${pageSize}</arg1>
-                                </getAllReqSubscribe>
-                            </Body>
-                        </Envelope>`,
+                        <Body>
+                            <getAllReqSubscribe xmlns="http://service.binotify/">
+                                <arg0 xmlns="">${page}</arg0>
+                                <arg1 xmlns="">${pageSize}</arg1>
+                            </getAllReqSubscribe>
+                        </Body>
+                    </Envelope>`,
                     {
                         headers: {
                             "Content-Type": "text/xml",
