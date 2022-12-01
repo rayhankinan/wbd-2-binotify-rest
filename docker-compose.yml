@@ -12,6 +12,8 @@ services:
     depends_on:
       - postgresql
       - redis
+    networks:
+      - api-postgresql-redis
   postgresql:
     image: postgres:latest
     ports:
@@ -23,6 +25,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./postgresql:/var/lib/postgresql/data
+    networks:
+      - api-postgresql-redis
   redis:
     image: redis:latest
     restart: always
@@ -31,6 +35,9 @@ services:
     hostname: cache-binotify-rest-service
     volumes:
       - ./redis:/data
+    networks:
+      - api-postgresql-redis
 networks:
   api-postgresql-redis:
-    driver: bridge
+    external:
+      name: binotify-soap-service_soap-services
