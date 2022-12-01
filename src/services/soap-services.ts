@@ -26,9 +26,9 @@ export class SOAPService {
                 xml["S:Envelope"]["S:Body"][0]["ns2:checkStatusResponse"][0]
                     .return[0];
 
-            if (result === "Subscription not found") {
+            if (result === "REJECTED") {
                 return false;
-            } else if (result === "Subscription accepted") {
+            } else if (result === "ACCEPTED") {
                 return true;
             } else {
                 return false;
