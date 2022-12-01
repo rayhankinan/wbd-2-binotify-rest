@@ -43,7 +43,8 @@ export class SongController {
             song.title = title;
             song.penyanyiID = token.userID;
             song.audioPath = req.file!.filename;
-            song.duration = Math.ceil(getMP3Duration(req.file!.buffer) / 1000);
+            const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
+            song.duration = Math.ceil(getMP3Duration(buffer) / 1000);
 
             // Buat lagu
             const newSong = await song.save();

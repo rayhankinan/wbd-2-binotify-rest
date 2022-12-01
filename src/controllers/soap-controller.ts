@@ -175,7 +175,18 @@ export class SoapController {
                     }
                 );
                 const xml = await xml2js.parseStringPromise(response.data);
-
+                const pageCount =
+                    xml["S:Envelope"]["S:Body"][0][
+                        "ns2:getAllReqSubscribeResponse"
+                    ][0].return[0].pageCount[0];
+                if (pageCount === "0") {
+                    res.status(StatusCodes.OK).json({
+                        message: "No subscription request found",
+                        data: subscriptionData,
+                        pageCount: pageCount,
+                    });
+                    return;
+                }
                 const results =
                     xml["S:Envelope"]["S:Body"][0][
                         "ns2:getAllReqSubscribeResponse"
@@ -188,11 +199,6 @@ export class SoapController {
                         subscriberName: result.subscriberName[0],
                     });
                 });
-
-                const pageCount =
-                    xml["S:Envelope"]["S:Body"][0][
-                        "ns2:getAllReqSubscribeResponse"
-                    ][0].return[0].pageCount[0];
 
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
