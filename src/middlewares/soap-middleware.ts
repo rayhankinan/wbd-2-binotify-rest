@@ -1,11 +1,11 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { Request, Response, NextFunction } from "express";
 
-import { AuthRequest } from "./authentication-middleware";
 import { SOAPService } from "../services/soap-services";
 
 interface ValidateRequest {
     creatorID: number;
+    subscriberID: number;
 }
 
 export class SOAPMiddleware {
@@ -17,16 +17,9 @@ export class SOAPMiddleware {
 
     validate() {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const { token } = req as AuthRequest;
-            if (!token) {
-                res.status(StatusCodes.UNAUTHORIZED).json({
-                    message: ReasonPhrases.UNAUTHORIZED,
-                });
-                return;
-            }
 
-            const { creatorID }: ValidateRequest = req.body;
-            if (!creatorID) {
+            const { creatorID, subscriberID }: ValidateRequest = req.body;
+            if (!creatorID || !subscriberID) {
                 res.status(StatusCodes.BAD_REQUEST).json({
                     message: ReasonPhrases.BAD_REQUEST,
                 });
@@ -35,7 +28,7 @@ export class SOAPMiddleware {
 
             const isValidated = await this.soapServices.validate(
                 creatorID,
-                token.userID
+                subscriberID
             );
             if (!isValidated) {
                 res.status(StatusCodes.UNAUTHORIZED).json({

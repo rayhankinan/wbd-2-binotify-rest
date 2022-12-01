@@ -39,5 +39,4 @@ services:
       - api-postgresql-redis
 networks:
   api-postgresql-redis:
-    external:
-      name: binotify-soap-service_soap-services
+    driver: bridge

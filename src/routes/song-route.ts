@@ -52,7 +52,13 @@ export class SongRoute {
                 this.authenticationMiddleware.authenticate(),
                 this.songController.delete()
             )
-            .get("/app/song/:artistID", this.songController.indexArtist())
-            .get("/app/song/listen/:songID", this.songController.fetchSong());
+            .get(
+                "/app/song/:artistID", 
+                // this.soapMiddleware.validate(),
+                this.songController.indexArtist())
+            .get(
+                "/app/song/listen/:songID", 
+                // this.soapMiddleware.validate(),
+                this.songController.fetchSong());
     }
 }
