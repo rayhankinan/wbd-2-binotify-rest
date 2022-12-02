@@ -134,32 +134,18 @@ export class UserController {
     index() {
         return async (req: Request, res: Response) => {
 
-            // Get page query
-            const page = parseInt((req.query?.page || "1") as string);
-            const pageSize = parseInt((req.query?.pageSize || "5") as string);
-
-            const [users, length] = await Promise.all([
-                User.createQueryBuilder("user")
-                    .select(["user.userID", "user.name"])
-                    .where("user.isAdmin = :isAdmin", { isAdmin: false })
-                    .skip((page - 1) * pageSize)
-                    .take(pageSize)
-                    .cache(
-                        `penyanyi_page_${page}`,
-                        cacheConfig.cacheExpirationTime
-                    )
-                    .getMany(),
-                User.createQueryBuilder("user")
-                    .select(["user.userID"])
-                    .where("user.isAdmin = :isAdmin", { isAdmin: false })
-                    .cache("penyanyi_count", cacheConfig.cacheExpirationTime)
-                    .getCount(),
-            ]);
+            const users = await User.createQueryBuilder("user")
+                .select(["user.userID", "user.name"])
+                .where("user.isAdmin = :isAdmin", { isAdmin: false })
+                .cache(
+                    `penyanyi`,
+                    cacheConfig.cacheExpirationTime
+                )
+                .getMany()
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
-                data: users,
-                totalPage: Math.ceil(length / pageSize),
+                data: users
             });
         };
     }
