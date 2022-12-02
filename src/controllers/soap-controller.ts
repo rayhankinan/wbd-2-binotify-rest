@@ -41,6 +41,7 @@ export class SoapController {
                             <approveSubscribe xmlns="http://service.binotify/">
                                 <arg0 xmlns="">${creatorID}</arg0>
                                 <arg1 xmlns="">${subscriberID}</arg1>
+                                <arg2 xmlns="">${soapConfig.key}</arg2>
                             </approveSubscribe>
                         </Body>
                     </Envelope>`,
@@ -103,6 +104,7 @@ export class SoapController {
                             <rejectSubscribe xmlns="http://service.binotify/">
                                 <arg0 xmlns="">${creatorID}</arg0>
                                 <arg1 xmlns="">${subscriberID}</arg1>
+                                <arg2 xmlns="">${soapConfig.key}</arg2>
                             </rejectSubscribe>
                         </Body>
                     </Envelope>`,
@@ -165,6 +167,7 @@ export class SoapController {
                             <getAllReqSubscribe xmlns="http://service.binotify/">
                                 <arg0 xmlns="">${page}</arg0>
                                 <arg1 xmlns="">${pageSize}</arg1>
+                                <arg2 xmlns="">${soapConfig.key}</arg2>
                             </getAllReqSubscribe>
                         </Body>
                     </Envelope>`,
