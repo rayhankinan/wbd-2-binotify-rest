@@ -8,6 +8,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { getMP3Duration } from "../utils/get-mp3-duration";
 
+import { SOAPService } from "../services/soap-services";
+
 interface UpdateRequest {
     title: string;
 }
@@ -320,10 +322,21 @@ export class SongController {
 
     indexArtist() {
         return async (req: Request, res: Response) => {
-            // TODO: Authenticate subscription
-
             // Get page query
             const { artistID } = req.params;
+            const creatorID = parseInt(artistID);
+            const subscriberID = parseInt(req.query.subscriber_id as string);
+            
+            // Authenticate subscription
+            const svc = new SOAPService();
+            const isValid = await svc.validate(creatorID, subscriberID);
+
+            if (!isValid) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
 
             // Fetch semua lagu milik requester
             const songs = await Song.findBy({
@@ -350,14 +363,25 @@ export class SongController {
 
     fetchSong() {
         return async (req: Request, res: Response) => {
-            // TODO: Authenticate subscription
-
+            
             const songID = parseInt(req.params.songID);
-
+            const subscriberID = parseInt(req.query.subscriber_id as string);
+            
             // Fetch semua lagu milik requester
             const song = await Song.findOneBy({
                 songID,
             });
+            
+            // Authenticate subscription
+            const svc = new SOAPService();
+            const isValid = await svc.validate(song!.penyanyiID, subscriberID);
+
+            if (!isValid) {
+                res.status(StatusCodes.UNAUTHORIZED).json({
+                    message: ReasonPhrases.UNAUTHORIZED,
+                });
+                return;
+            }
 
             // Apabila tidak ditemukan ...
             if (!song) {
