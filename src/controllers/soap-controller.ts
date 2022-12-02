@@ -191,6 +191,16 @@ export class SoapController {
                     xml["S:Envelope"]["S:Body"][0][
                         "ns2:getAllReqSubscribeResponse"
                     ][0].return[0].data;
+
+                if (!results) {
+                    res.status(StatusCodes.OK).json({
+                        message: ReasonPhrases.OK,
+                        data: [],
+                        totalPage: pageCount,
+                    });
+                    return;
+                }
+
                 results.forEach((result: any) => {
                     subscriptionData.push({
                         creatorID: result.creatorID[0],
