@@ -164,6 +164,20 @@ export class UserController {
         };
     }
 
+    admin() {
+        return async (req: Request, res: Response) => {
+
+            const admin = await User.findOneBy({
+                isAdmin: true,
+            });
+
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: admin,
+            });
+        };
+    }
+
     check() {
         return async (req: Request, res: Response) => {
             const { token } = req as AuthRequest;
