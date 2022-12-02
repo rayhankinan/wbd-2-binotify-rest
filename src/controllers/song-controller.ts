@@ -95,10 +95,15 @@ export class SongController {
                     .getCount(),
             ]);
 
+            let totalPage = Math.ceil(length / pageSize);
+            if (totalPage === 0) {
+                totalPage = 1;
+            }
+
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
                 data: songs,
-                totalPage: Math.ceil(length / pageSize),
+                totalPage: totalPage,
             });
         };
     }
@@ -186,6 +191,8 @@ export class SongController {
             // Update model
             song.title = title;
             song.audioPath = req.file!.filename;
+            const buffer = fs.readFileSync(path.join(__dirname, "..", "..", "uploads", song.audioPath))
+            song.duration = Math.ceil(getMP3Duration(buffer) / 1000);
 
             // Save!
             const newSong = await song.save();
