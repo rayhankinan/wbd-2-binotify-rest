@@ -12,6 +12,7 @@ export class SOAPService {
                         <checkStatus xmlns="http://service.binotify/">
                             <arg0 xmlns="">${creatorID}</arg0>
                             <arg1 xmlns="">${subscriberID}</arg1>
+                            <arg2 xmlns="">${soapConfig.key}</arg2>
                         </checkStatus>
                     </Body>
                 </Envelope>`,
